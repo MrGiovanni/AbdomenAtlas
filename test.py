@@ -115,12 +115,12 @@ def validation(model, ValLoader, val_transforms, args):
             # print(torch.unique(batch['label']), torch.unique(batch['one_channel_label']))
             visualize_label(batch, save_dir + '/' + name[0].split('/')[0] , val_transforms)
 
-            old_name = os.path.join(save_dir + '/' + name[0].split('/')[0], name_img[0].split('/')[-1] + '_original_label.nii.gz')
-            new_name = os.path.join(save_dir + '/' + name[0].split('/')[0], 'original_label.nii.gz')
+            old_name = os.path.join(save_dir + '/' + name[0].split('/')[0], name_img[0].split('/')[-1], name_img[0].split('/')[-1] + '_original_label.nii.gz')
+            new_name = os.path.join(save_dir + '/' + name[0].split('/')[0], name_img[0].split('/')[-1], 'original_label.nii.gz')
             os.rename(old_name,new_name)
 
-            old_name = os.path.join(save_dir + '/' + name[0].split('/')[0], name_img[0].split('/')[-1] + '_pseudo_label.nii.gz')
-            new_name = os.path.join(save_dir + '/' + name[0].split('/')[0], 'pseudo_label.nii.gz')
+            old_name = os.path.join(save_dir + '/' + name[0].split('/')[0], name_img[0].split('/')[-1], name_img[0].split('/')[-1] + '_pseudo_label.nii.gz')
+            new_name = os.path.join(save_dir + '/' + name[0].split('/')[0], name_img[0].split('/')[-1], 'pseudo_label.nii.gz')
             os.rename(old_name,new_name)
 
             destination = save_dir + '/' + name[0].split('/')[0]+'/'+ name_img[0].split('/')[-1]+'/ct.nii.gz'
