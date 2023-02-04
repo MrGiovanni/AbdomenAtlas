@@ -1,0 +1,5 @@
+connected-components-3d
+h5py==3.6.0
+tqdm
+fastremap
+nibabel
