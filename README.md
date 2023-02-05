@@ -1,5 +1,24 @@
 # LargePseudoDataset
 
+#### Setup
+```
+cd /data/zzhou82/environments
+python3 -m venv universal
+source /data/zzhou82/environments/universal/bin/activate
+
+cd /data/zzhou82/project
+clone git https://github.com/MrGiovanni/LargePseudoDataset.git
+cd LargePseudoDataset
+pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
+pip install 'monai[all]'
+pip install -r requirements.txt
+cd pretrained_checkpoints
+wget https://www.dropbox.com/s/6ggd0gq5qddahwh/epoch_450.pth
+cd ..
+```
+
+#### Generate pseudo labels for different datasets
+
 ```
 source /data/zzhou82/environments/universal/bin/activate
 cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
