@@ -31,35 +31,22 @@ def validation(model, ValLoader, val_transforms, args):
     save_dir = args.log_name
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
-        # os.makedirs(save_dir+'/predict')
     model.eval()
     dice_list = {}
     for key in TEMPLATE.keys():
         dice_list[key] = np.zeros((2, NUM_CLASS)) # 1st row for dice, 2nd row for count
     for index, batch in enumerate(tqdm(ValLoader)):
-        # print('%d processd' % (index))
         image, label, name,name_img = batch["image"].cuda(), batch["post_label"], batch["name"],batch["name_img"]
         image_file_path = args.data_root_path + name_img[0] +'.nii.gz'
         print(image_file_path)
         print(image.shape)
         print(name)
         print(name_img)
-        # print(label.shape)
         with torch.no_grad():
-            # with torch.autocast(device_type="cuda", dtype=torch.float16):
             pred = sliding_window_inference(image, (args.roi_x, args.roi_y, args.roi_z), 1, model, overlap=0.75, mode='gaussian')
             pred_sigmoid = F.sigmoid(pred)
         
-        #pred_hard = threshold_organ(pred_sigmoid, organ=args.threshold_organ, threshold=args.threshold)
         pred_hard = threshold_organ(pred_sigmoid)
-        # B = pred_hard.shape[0]
-        # D = pred_hard.shape[-1]
-        # for b in range(B):
-        #     for d in range(D):
-        #         if len(torch.unique(image[b,:,:,:,d]))==1:
-        #             pred_hard[b,:,:,:,d]=0
-        # print(torch.unique(image[:,:,:,:,290]))
-        # print(torch.unique(image[:,:,:,:,291]))
         pred_hard = pred_hard.cpu()
         torch.cuda.empty_cache()
 
@@ -71,25 +58,8 @@ def validation(model, ValLoader, val_transforms, args):
             organ_list_all = TEMPLATE['all'] # post processing all organ
             pred_hard_post,total_anomly_slice_number = organ_post_process(pred_hard.numpy(), organ_list_all,save_dir + '/' + name[0].split('/')[0]+'/'+ name_img[0].split('/')[-1])
             pred_hard_post = torch.tensor(pred_hard_post)
-            # np.savez_compressed(save_dir + '/' + name[0].split('/')[0] +'/'+ name[0].split('/')[-1], pred=pred_hard)
-
-            # for organ in organ_list:
-            #     if torch.sum(label[b,organ-1,:,:,:].cuda()) != 0:
-            #         dice_organ, recall, precision = dice_score(pred_hard_post[b,organ-1,:,:,:].cuda(), label[b,organ-1,:,:,:].cuda())
-            #         dice_list[template_key][0][organ-1] += dice_organ.item()
-            #         dice_list[template_key][1][organ-1] += 1
-            #         content += '%s: %.4f, '%(ORGAN_NAME[organ-1], dice_organ.item())
-            #         print('%s: dice %.4f, recall %.4f, precision %.4f.'%(ORGAN_NAME[organ-1], dice_organ.item(), recall.item(), precision.item()))
-            # print(content)
         
         if args.store_result:
-            # pred_sigmoid_store = (pred_sigmoid.cpu().numpy() * 255).astype(np.uint8)
-            # label_store = (label.numpy()).astype(np.uint8)
-            # np.savez_compressed(save_dir + '/predict/' + name[0].split('/')[0] + name[0].split('/')[-1], 
-            #                 pred=pred_sigmoid_store, label=label_store)
-            ### testing phase for this function
-
-            # one_channel_label_v1, one_channel_label_v2 = merge_label(pred_hard_post, name)
             organ_index_all = TEMPLATE['all']
             for organ_index in organ_index_all:
                 psedu_label_single = psedu_label_single_organ(pred_hard_post,organ_index)
@@ -105,13 +75,6 @@ def validation(model, ValLoader, val_transforms, args):
 
             psedu_label_all = psedu_label_all_organ(pred_hard_post)
             batch['psedu_label'] = psedu_label_all.cpu()
-            # batch['one_channel_label_v1'] = one_channel_label_v1.cpu()
-            # batch['one_channel_label_v2'] = one_channel_label_v2.cpu()
-
-            # _, split_label = merge_label(batch["post_label"], name)
-            # batch['split_label'] = split_label.cpu()
-            # print(batch['label'].shape, batch['one_channel_label'].shape)
-            # print(torch.unique(batch['label']), torch.unique(batch['one_channel_label']))
             visualize_label(batch, save_dir + '/' + name[0].split('/')[0] , val_transforms)
 
             old_name = os.path.join(save_dir + '/' + name[0].split('/')[0], name_img[0].split('/')[-1], name_img[0].split('/')[-1] + '_original_label.nii.gz')
@@ -128,9 +91,6 @@ def validation(model, ValLoader, val_transforms, args):
                 print("Image File copied successfully.")
             except:
                 print("Error occurred while copying file.")
-            ## load data
-            # data = np.load('/out/epoch_80/predict/****.npz')
-            # pred, label = data['pred'], data['label']
             lung_data_path = save_dir + '/' + name[0].split('/')[0]+'/'+ name_img[0].split('/')[-1]+'/segmentations/lung_right.nii.gz'
             organ_name=['lung_right','lung_left']
             ct_data = nib.load(destination).get_fdata()
@@ -147,66 +107,10 @@ def validation(model, ValLoader, val_transforms, args):
                             content = name_img[0].split('/')[-1]
                             writer.writerow([content,organ_name[0],s+1])
                             writer.writerow([content,organ_name[1],s+1])
-
-            # for s in range(lung_data.shape[-1]):
-            #     if len(np.unique(ct_data[:,:,s]))!= 1 and lung_data_sum[s] ==0:
-            #         if s==0 and lung_data_sum[s+1]>10000:
-            #             print('start writing csv as slice: '+str(s+1))
-            #             with open(save_dir + '/' + name[0].split('/')[0]+'/anomaly.csv','a',newline='') as f:
-            #                 writer = csv.writer(f)
-            #                 content = name_img[0].split('/')[-1]
-            #                 writer.writerow([content,organ_name[0],s+1])
-            #                 writer.writerow([content,organ_name[1],s+1])
-            #         elif s!=0 and s!=lung_data.shape[-1]-1:
-            #             if lung_data_sum[s-1]>10000 or lung_data_sum[s+1]>10000:
-            #                 print('start writing csv as slice: '+str(s+1))
-            #                 with open(save_dir + '/' + name[0].split('/')[0]+'/anomaly.csv','a',newline='') as f:
-            #                     writer = csv.writer(f)
-            #                     content = name_img[0].split('/')[-1]
-            #                     writer.writerow([content,organ_name[0],s+1])
-            #                     writer.writerow([content,organ_name[1],s+1])
-            #         elif s==lung_data.shape[-1]-1 and lung_data_sum[s-1]>10000:
-            #             print('start writing csv as slice: '+str(s+1))
-            #             with open(save_dir + '/' + name[0].split('/')[0]+'/anomaly.csv','a',newline='') as f:
-            #                 writer = csv.writer(f)
-            #                 content = name_img[0].split('/')[-1]
-            #                 writer.writerow([content,organ_name[0],s+1])
-            #                 writer.writerow([content,organ_name[1],s+1])
-
             
         torch.cuda.empty_cache()
     
     ave_organ_dice = np.zeros((2, NUM_CLASS))
-
-    # with open('out/'+args.log_name+f'/test_{args.epoch}.txt', 'w') as f:
-    #     for key in TEMPLATE.keys():
-    #         organ_list = TEMPLATE[key]
-    #         content = 'Task%s| '%(key)
-    #         for organ in organ_list:
-    #             dice = dice_list[key][0][organ-1] / dice_list[key][1][organ-1]
-    #             content += '%s: %.4f, '%(ORGAN_NAME[organ-1], dice)
-    #             ave_organ_dice[0][organ-1] += dice_list[key][0][organ-1]
-    #             ave_organ_dice[1][organ-1] += dice_list[key][1][organ-1]
-    #         print(content)
-    #         f.write(content)
-    #         f.write('\n')
-    #     content = 'Average | '
-    #     for i in range(NUM_CLASS):
-    #         content += '%s: %.4f, '%(ORGAN_NAME[i], ave_organ_dice[0][i] / ave_organ_dice[1][i])
-    #     print(content)
-    #     f.write(content)
-    #     f.write('\n')
-    #     print(np.mean(ave_organ_dice[0] / ave_organ_dice[1]))
-    #     f.write('%s: %.4f, '%('average', np.mean(ave_organ_dice[0] / ave_organ_dice[1])))
-    #     f.write('\n')
-        
-    
-    # np.save(save_dir + '/result.npy', dice_list)
-    # load
-    # dice_list = np.load(/out/epoch_xxx/result.npy, allow_pickle=True)
-
-
-
 
 def main():
     parser = argparse.ArgumentParser()
