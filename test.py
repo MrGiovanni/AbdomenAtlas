@@ -101,7 +101,6 @@ def validation(model, ValLoader, val_transforms, args):
                 old_name = os.path.join(save_dir, name[0].split('/')[0], name_img[0].split('/')[-1], 'segmentations', name_img[0].split('/')[-1]+'_'+organ_name+'.nii.gz')
                 new_name = os.path.join(save_dir, name[0].split('/')[0], name_img[0].split('/')[-1], 'segmentations', organ_name+'.nii.gz')
 
-                print('>> RENAME: {} -> {}'.format(old_name, new_name))
                 os.rename(old_name,new_name)
 
             psedu_label_all = psedu_label_all_organ(pred_hard_post)
