@@ -99,7 +99,9 @@ def validation(model, ValLoader, val_transforms, args):
             left_lung_data = nib.load(left_lung_data_path).get_fdata()
             right_lung_data_sum = np.sum(right_lung_data,axis=(0,1))
             left_lung_data_sum = np.sum(left_lung_data,axis=(0,1))
-            if right_lung_data_sum>left_lung_data_sum:
+            right_lung_size = np.sum(right_lung_data,axis=(0,1,2))
+            left_lung_size = np.sum(left_lung_data,axis=(0,1,2))
+            if right_lung_size>left_lung_size:
                 non_zero_idx = np.nonzero(right_lung_data_sum)
                 first_non_zero_idx = non_zero_idx[0][0]
                 if total_anomly_slice_number!=0:
