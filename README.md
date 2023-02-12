@@ -59,7 +59,7 @@ CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/
 
 source /data/zzhou82/environments/universal/bin/activate
 cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=4 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_12 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_12.txt
+CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_12 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_12.txt
 
 source /data/zzhou82/environments/universal/bin/activate
 cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
@@ -78,8 +78,8 @@ CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/
 - [x] PAOT_04
 - [ ] PAOT_05
 - [x] PAOT_07
-- [ ] PAOT_08
-- [ ] PAOT_09
+- [x] PAOT_08
+- [x] PAOT_09
 - [ ] PAOT_10
 - [ ] PAOT_12
 - [x] PAOT_13
