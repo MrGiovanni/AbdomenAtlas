@@ -1,7 +1,7 @@
 import os, sys
 import cc3d
 import fastremap
-
+import csv
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -222,6 +222,9 @@ TUMOR_ORGAN = {
 def organ_post_process(pred_mask, organ_list,save_dir):
     post_pred_mask = np.zeros(pred_mask.shape)
     plot_save_path = save_dir
+    log_path = save_dir.split('/')[0]
+    dataset_id = save_dir.split('/')[1]
+    case_id = save_dir.split('/')[-1]
     if not os.path.isdir(plot_save_path):
         os.makedirs(plot_save_path)
     for b in range(pred_mask.shape[0]):
@@ -271,28 +274,35 @@ def organ_post_process(pred_mask, organ_list,save_dir):
                         else:
                             print('need anomly detection')
                             print('start anomly detection at right lung')
-
-                            left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
-                                pred_mask,post_pred_mask[b,15],right_lung_save_path,b,total_anomly_slice_number)
-                            post_pred_mask[b,16] = left_lung_mask
-                            post_pred_mask[b,15] = right_lung_mask
-                            right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
-                            left_lung_size = np.sum(post_pred_mask[b,16],axis=(0,1,2))
-                            while right_lung_size/left_lung_size>4 or left_lung_size/right_lung_size>4:
-                                print('still need anomly detection')
-                                if right_lung_size>left_lung_size:
-                                    left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
+                            try:
+                                left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
                                     pred_mask,post_pred_mask[b,15],right_lung_save_path,b,total_anomly_slice_number)
-                                else:
-                                    left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
-                                    pred_mask,post_pred_mask[b,16],right_lung_save_path,b,total_anomly_slice_number)
                                 post_pred_mask[b,16] = left_lung_mask
                                 post_pred_mask[b,15] = right_lung_mask
                                 right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
                                 left_lung_size = np.sum(post_pred_mask[b,16],axis=(0,1,2))
-
-                            
-                            print('lung seperation complete')
+                                while right_lung_size/left_lung_size>4 or left_lung_size/right_lung_size>4:
+                                    print('still need anomly detection')
+                                    if right_lung_size>left_lung_size:
+                                        left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
+                                        pred_mask,post_pred_mask[b,15],right_lung_save_path,b,total_anomly_slice_number)
+                                    else:
+                                        left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
+                                        pred_mask,post_pred_mask[b,16],right_lung_save_path,b,total_anomly_slice_number)
+                                    post_pred_mask[b,16] = left_lung_mask
+                                    post_pred_mask[b,15] = right_lung_mask
+                                    right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
+                                    left_lung_size = np.sum(post_pred_mask[b,16],axis=(0,1,2))
+                                print('lung seperation complete')
+                            except IndexError:
+                                left_lung_mask, right_lung_mask = lung_post_process(pred_mask[b])
+                                post_pred_mask[b,16] = left_lung_mask
+                                post_pred_mask[b,15] = right_lung_mask
+                                print("cannot seperate two lungs, writing csv")
+                                with open(log_path + '/' + dataset_id +'/anomaly.csv','a',newline='') as f:
+                                    writer = csv.writer(f)
+                                    content = case_id
+                                    writer.writerow([content])
 
   
 
@@ -315,26 +325,36 @@ def organ_post_process(pred_mask, organ_list,save_dir):
 
                             print('need anomly detection')
                             print('start anomly detection at left lung')
-                            left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
-                                pred_mask,post_pred_mask[b,16],left_lung_save_path,b,total_anomly_slice_number)
-                            post_pred_mask[b,16] = left_lung_mask
-                            post_pred_mask[b,15] = right_lung_mask
-                            right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
-                            left_lung_size = np.sum(post_pred_mask[b,16],axis=(0,1,2))
-                            while right_lung_size/left_lung_size>4 or left_lung_size/right_lung_size>4:
-                                print('still need anomly detection')
-                                if right_lung_size>left_lung_size:
-                                    left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
-                                    pred_mask,post_pred_mask[b,15],right_lung_save_path,b,total_anomly_slice_number)
-                                else:
-                                    left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
-                                    pred_mask,post_pred_mask[b,16],right_lung_save_path,b,total_anomly_slice_number)
+                            try:
+                                left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
+                                    pred_mask,post_pred_mask[b,16],left_lung_save_path,b,total_anomly_slice_number)
                                 post_pred_mask[b,16] = left_lung_mask
                                 post_pred_mask[b,15] = right_lung_mask
                                 right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
                                 left_lung_size = np.sum(post_pred_mask[b,16],axis=(0,1,2))
+                                while right_lung_size/left_lung_size>4 or left_lung_size/right_lung_size>4:
+                                    print('still need anomly detection')
+                                    if right_lung_size>left_lung_size:
+                                        left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
+                                        pred_mask,post_pred_mask[b,15],right_lung_save_path,b,total_anomly_slice_number)
+                                    else:
+                                        left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
+                                        pred_mask,post_pred_mask[b,16],right_lung_save_path,b,total_anomly_slice_number)
+                                    post_pred_mask[b,16] = left_lung_mask
+                                    post_pred_mask[b,15] = right_lung_mask
+                                    right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
+                                    left_lung_size = np.sum(post_pred_mask[b,16],axis=(0,1,2))
 
-                            print('lung seperation complete')
+                                print('lung seperation complete')
+                            except IndexError:
+                                left_lung_mask, right_lung_mask = lung_post_process(pred_mask[b])
+                                post_pred_mask[b,16] = left_lung_mask
+                                post_pred_mask[b,15] = right_lung_mask
+                                print("cannot seperate two lungs, writing csv")
+                                with open(log_path + '/' + dataset_id +'/anomaly.csv','a',newline='') as f:
+                                    writer = csv.writer(f)
+                                    content = case_id
+                                    writer.writerow([content])
                 print('find number of anomaly slice: '+str(total_anomly_slice_number))
 
 
@@ -588,9 +608,12 @@ def organ_region_filter_out(tumor_mask, organ_mask):
 def PSVein_post_process(PSVein_mask, pancreas_mask):
     xy_sum_pancreas = pancreas_mask.sum(axis=0).sum(axis=0)
     z_non_zero = np.nonzero(xy_sum_pancreas)
-    z_value = np.min(z_non_zero) ## the down side of pancreas
-    new_PSVein = PSVein_mask.copy()
-    new_PSVein[:,:,:z_value] = 0
+    if len(z_non_zero[0])!= 0:
+        z_value = np.min(z_non_zero) ## the down side of pancreas
+        new_PSVein = PSVein_mask.copy()
+        new_PSVein[:,:,:z_value] = 0
+    else:
+        new_PSVein = PSVein_mask.copy()
     return new_PSVein
 
 def lung_post_process(pred_mask):
