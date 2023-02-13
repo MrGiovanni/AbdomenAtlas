@@ -219,11 +219,11 @@ TUMOR_ORGAN = {
 }
 
 
-def organ_post_process(pred_mask, organ_list,save_dir):
+def organ_post_process(pred_mask, organ_list,save_dir,args):
     post_pred_mask = np.zeros(pred_mask.shape)
     plot_save_path = save_dir
-    log_path = save_dir.split('/')[0]
-    dataset_id = save_dir.split('/')[1]
+    log_path = args.log_name
+    dataset_id = save_dir.split('/')[-2]
     case_id = save_dir.split('/')[-1]
     if not os.path.isdir(plot_save_path):
         os.makedirs(plot_save_path)

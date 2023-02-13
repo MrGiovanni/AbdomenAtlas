@@ -56,7 +56,7 @@ def validation(model, ValLoader, val_transforms, args):
             template_key = get_key(name[b])
             organ_list = TEMPLATE[template_key]
             organ_list_all = TEMPLATE['all'] # post processing all organ
-            pred_hard_post,total_anomly_slice_number = organ_post_process(pred_hard.numpy(), organ_list_all,save_dir + '/' + name[0].split('/')[0]+'/'+ name_img[0].split('/')[-1])
+            pred_hard_post,total_anomly_slice_number = organ_post_process(pred_hard.numpy(), organ_list_all,save_dir + '/' + name[0].split('/')[0]+'/'+ name_img[0].split('/')[-1],args)
             pred_hard_post = torch.tensor(pred_hard_post)
         
         if args.store_result:
