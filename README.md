@@ -18,6 +18,26 @@ wget https://www.dropbox.com/s/6ggd0gq5qddahwh/epoch_450.pth
 cd ..
 ```
 
+#### Download public datasets
+
+```tar -xzvf name.tar.gz```
+
+```
+wget https://www.dropbox.com/s/jnv74utwh99ikus/01_Multi-Atlas_Labeling.tar.gz # 01 Multi-Atlas_Labeling.tar.gz (1.53 GB)
+wget https://www.dropbox.com/s/5yzdzb7el9r3o9i/02_TCIA_Pancreas-CT.tar.gz # 02 TCIA_Pancreas-CT.tar.gz (7.51 GB)
+wget https://www.dropbox.com/s/lzrhirei2t2vuwg/03_CHAOS.tar.gz # 03 CHAOS.tar.gz (925.3 MB)
+wget https://www.dropbox.com/s/2i19kuw7qewzo6q/04_LiTS.tar.gz # 04 LiTS.tar.gz (17.42 GB)
+wget https://www.dropbox.com/s/l2bvis2pjlcyas7/05_KiTS.tar.gz # 05 KiTS.tar.gz (28.04 GB)
+wget https://www.dropbox.com/s/toavg919niykblq/07_WORD.tar.gz # 07 WORD.tar.gz (5.31 GB)
+wget https://www.dropbox.com/s/70e3df92w3imggh/08_AbdomenCT-1K.tar.gz # 08 AbdomenCT-1K.tar.gz (82.54 GB)
+wget https://www.dropbox.com/s/7ro2nsmhf1cq2xn/09_AMOS.tar.gz # 09 AMOS.tar.gz (8.81 GB)
+wget https://www.dropbox.com/s/e7yq57esg3sci3m/10_Decathlon.tar.gz # 10 Decathlon.tar.gz (75.31 GB)
+wget https://www.dropbox.com/s/x6slst6kt9pdg2t/12_CT-ORG.tar.gz # 12 CT-ORG.tar.gz (18.03 GB)
+wget https://www.dropbox.com/s/6vp6o8tydb8waby/13_AbdomenCT-12organ.tar.gz # 13 AbdomenCT-12organ.tar.gz (1.48 GB)
+wget https://www.dropbox.com/s/ipkeaelyethy3sn/Totalsegmentator_dataset.zip # Totalsegmentor
+```
+
+
 #### Generate pseudo labels for different datasets
 
 ```
