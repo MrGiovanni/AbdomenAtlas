@@ -242,9 +242,19 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                     # post_pred_mask[b,9] = pred_mask[b,9]
                 # post_pred_mask[b,organ-1] = extract_topk_largest_candidates(pred_mask[b,organ-1], 1)
             elif organ == 16:
-                left_lung_mask, right_lung_mask = lung_post_process(pred_mask[b])
-                post_pred_mask[b,16] = left_lung_mask
-                post_pred_mask[b,15] = right_lung_mask
+                try:
+                    left_lung_mask, right_lung_mask = lung_post_process(pred_mask[b])
+                    post_pred_mask[b,16] = left_lung_mask
+                    post_pred_mask[b,15] = right_lung_mask
+                except IndexError:
+                    print('this case does not have lungs!')
+                    shape_temp = post_pred_mask[b,16].shape
+                    post_pred_mask[b,16] = np.zeros(shape_temp)
+                    post_pred_mask[b,15] = np.zeros(shape_temp)
+                    with open(log_path + '/' + dataset_id +'/anomaly.csv','a',newline='') as f:
+                        writer = csv.writer(f)
+                        content = case_id
+                        writer.writerow([content])
 
                 right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
                 left_lung_size = np.sum(post_pred_mask[b,16],axis=(0,1,2))
