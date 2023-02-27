@@ -101,30 +101,31 @@ def validation(model, ValLoader, val_transforms, args):
             left_lung_data_sum = np.sum(left_lung_data,axis=(0,1))
             right_lung_size = np.sum(right_lung_data,axis=(0,1,2))
             left_lung_size = np.sum(left_lung_data,axis=(0,1,2))
-            if right_lung_size>left_lung_size:
-                non_zero_idx = np.nonzero(right_lung_data_sum)
-                first_non_zero_idx = non_zero_idx[0][0]
-                if total_anomly_slice_number!=0:
-                    for s in range(first_non_zero_idx,right_lung_data.shape[-1]):
-                        if len(np.unique(ct_data[:,:,s]))!= 1 and right_lung_data_sum[s] ==0:
-                            print('start writing csv as slice: '+str(s+1))
-                            with open(save_dir + '/' + name[0].split('/')[0]+'/anomaly.csv','a',newline='') as f:
-                                writer = csv.writer(f)
-                                content = name_img[0].split('/')[-1]
-                                writer.writerow([content,organ_name[0],s+1])
-                                writer.writerow([content,organ_name[1],s+1])
-            else: 
-                non_zero_idx = np.nonzero(left_lung_data_sum)
-                first_non_zero_idx = non_zero_idx[0][0]
-                if total_anomly_slice_number!=0:
-                    for s in range(first_non_zero_idx,left_lung_data.shape[-1]):
-                        if len(np.unique(ct_data[:,:,s]))!= 1 and left_lung_data_sum[s] ==0:
-                            print('start writing csv as slice: '+str(s+1))
-                            with open(save_dir + '/' + name[0].split('/')[0]+'/anomaly.csv','a',newline='') as f:
-                                writer = csv.writer(f)
-                                content = name_img[0].split('/')[-1]
-                                writer.writerow([content,organ_name[0],s+1])
-                                writer.writerow([content,organ_name[1],s+1])
+            if right_lung_size != 0 or left_lung_size != 0:
+                if right_lung_size>left_lung_size:
+                    non_zero_idx = np.nonzero(right_lung_data_sum)
+                    first_non_zero_idx = non_zero_idx[0][0]
+                    if total_anomly_slice_number!=0:
+                        for s in range(first_non_zero_idx,right_lung_data.shape[-1]):
+                            if len(np.unique(ct_data[:,:,s]))!= 1 and right_lung_data_sum[s] ==0:
+                                print('start writing csv as slice: '+str(s+1))
+                                with open(save_dir + '/' + name[0].split('/')[0]+'/anomaly.csv','a',newline='') as f:
+                                    writer = csv.writer(f)
+                                    content = name_img[0].split('/')[-1]
+                                    writer.writerow([content,organ_name[0],s+1])
+                                    writer.writerow([content,organ_name[1],s+1])
+                else: 
+                    non_zero_idx = np.nonzero(left_lung_data_sum)
+                    first_non_zero_idx = non_zero_idx[0][0]
+                    if total_anomly_slice_number!=0:
+                        for s in range(first_non_zero_idx,left_lung_data.shape[-1]):
+                            if len(np.unique(ct_data[:,:,s]))!= 1 and left_lung_data_sum[s] ==0:
+                                print('start writing csv as slice: '+str(s+1))
+                                with open(save_dir + '/' + name[0].split('/')[0]+'/anomaly.csv','a',newline='') as f:
+                                    writer = csv.writer(f)
+                                    content = name_img[0].split('/')[-1]
+                                    writer.writerow([content,organ_name[0],s+1])
+                                    writer.writerow([content,organ_name[1],s+1])
                 
         torch.cuda.empty_cache()
     
