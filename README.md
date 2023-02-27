@@ -96,11 +96,11 @@ CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/
 - [x] PAOT_02
 - [x] PAOT_03
 - [x] PAOT_04
-- [ ] PAOT_05
+- [x] PAOT_05
 - [x] PAOT_07
 - [x] PAOT_08
 - [x] PAOT_09
-- [ ] PAOT_10
+- [x] PAOT_10
 - [ ] PAOT_12
 - [x] PAOT_13
 - [ ] PAOT_14
