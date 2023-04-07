@@ -2,6 +2,7 @@ import os, sys
 import cc3d
 import fastremap
 import csv
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,14 +10,13 @@ import torch.nn.functional as F
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.ensemble import IsolationForest
-#from pyod.models.knn import KNN
+
 from math import ceil
 from scipy.ndimage.filters import gaussian_filter
 import warnings
 from typing import Any, Callable, Dict, List, Mapping, Sequence, Tuple, Union
 from scipy import ndimage
-
+import cv2
 from monai.data.utils import compute_importance_map, dense_patch_slices, get_valid_patch_size
 from monai.transforms import Resize, Compose
 from monai.utils import (
@@ -58,7 +58,9 @@ TEMPLATE={
     '10_09': [1],
     '10_10': [31],
     '15': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], ## total segmentation
-    'all': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32], ## all organ index
+    'all': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32], 
+    'target':[1,2,3,4,6,7,8,9,11], ## target organ index
+    'assemble':[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]
 }
 
 ORGAN_NAME = ['Spleen', 'Right Kidney', 'Left Kidney', 'Gall Bladder', 'Esophagus', 
@@ -74,6 +76,14 @@ ORGAN_NAME_LOW = ['spleen', 'kidney_right', 'kidney_left', 'gall_bladder', 'esop
                 'lung_right', 'lung_left', 'colon', 'intestine', 'rectum', 
                 'bladder', 'prostate', 'femur_left', 'femur_right', 'celiac_truck',
                 'kidney_tumor', 'liver_tumor', 'pancreas_tumor', 'hepatic_vessel_tumor', 'lung_tumor', 'colon_tumor', 'kidney_cyst']
+
+ORGAN_NAME_OVERLAP = ['spleen', 'kidney_right', 'kidney_left', 'gall_bladder', 'esophagus', 
+                'liver', 'stomach',   
+                'pancreas', 'adrenal_gland_right', 'adrenal_gland_left', 'duodenum', 
+                'lung_right', 'lung_left', 'colon', 'intestine', 'rectum', 
+                'bladder', 'prostate', 'femur_left', 'femur_right', ]
+
+
 ## mapping to original setting
 MERGE_MAPPING_v1 = {
     '01': [(1,1), (2,2), (3,3), (4,4), (5,5), (6,6), (7,7), (8,8), (9,9), (10,10), (11,11), (12,12), (13,13), (14,14)],
@@ -93,6 +103,7 @@ MERGE_MAPPING_v1 = {
     '10_10': [(31,1)],
     '12': [(2,4), (3,4), (21,2), (6,1), (16,3), (17,3)],  
     '13': [(1,3), (2,2), (3,2), (4,8), (5,9), (6,1), (7,7), (8,5), (9,6), (11,4), (12,10), (13,11), (25,12)],
+    '14': [(1,18),(2,11),(3,10),(4,8),(6,12),(7,19),(8,1),(9,9),(11,13)],
     '15': [(1,1), (2,2), (3,3), (4,4), (5,5), (6,6), (7,7), (8,8), (9,9), (10,10), (11,11), (12,12), (13,13), (14,14), (16,16), (17,17), (18,18)],
 }
 
@@ -116,9 +127,10 @@ MERGE_MAPPING_v2 = {
     '10_10': [(31,1)],
     '12': [(2,4), (3,5), (21,2), (6,1), (16,3), (17,6)],  
     '13': [(1,3), (2,2), (3,13), (4,8), (5,9), (6,1), (7,7), (8,5), (9,6), (11,4), (12,10), (13,11), (25,12)],
+    '14': [(1,18),(2,11),(3,10),(4,8),(6,12),(7,19),(8,1),(9,9),(11,13)],
     '15': [(1,1), (2,2), (3,3), (4,4), (5,5), (6,6), (7,7), (8,8), (9,9), (10,10), (11,11), (12,12), (13,13), (14,14), (16,16), (17,17), (18,18)],
 }
-PSEDU_LABEL_ALL = {
+PSEUDO_LABEL_ALL = {
     'all':[(1,1), (2,2), (3,3), (4,4), (5,5), (6,6), (7,7), (8,8), (9,9), (10,10), (11,11), (12,12), (13,13), (14,14), (15,15),(16,16), (17,17), (18,18),(19,19),(20,20),(21,21),(22,22),(23,23),(24,24),(25,25),(26,26),(27,27),(28,28),(29,29),(30,30),(31,31),(32,32)],
     'Spleen':[(1,1)],
     'Right Kidney': [(2,1)],
@@ -221,7 +233,7 @@ TUMOR_ORGAN = {
 
 def organ_post_process(pred_mask, organ_list,save_dir,args):
     post_pred_mask = np.zeros(pred_mask.shape)
-    plot_save_path = save_dir
+    plot_save_path = os.path.join(save_dir,'backbones',args.backbone)
     log_path = args.log_name
     dataset_id = save_dir.split('/')[-2]
     case_id = save_dir.split('/')[-1]
@@ -229,12 +241,6 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
         os.makedirs(plot_save_path)
     for b in range(pred_mask.shape[0]):
         for organ in organ_list:
-            # if organ == 16:
-            #     left_lung_mask, right_lung_mask = lung_post_process(pred_mask[b])
-            #     post_pred_mask[b,16] = left_lung_mask
-            #     post_pred_mask[b,15] = right_lung_mask
-            # elif organ == 17:
-            #     continue ## the left lung case has been processes in right lung
             if organ == 11: # both process pancreas and Portal vein and splenic vein
                 post_pred_mask[b,10] = extract_topk_largest_candidates(pred_mask[b,10], 1) # for pancreas
                 if 10 in organ_list:
@@ -242,9 +248,19 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                     # post_pred_mask[b,9] = pred_mask[b,9]
                 # post_pred_mask[b,organ-1] = extract_topk_largest_candidates(pred_mask[b,organ-1], 1)
             elif organ == 16:
-                left_lung_mask, right_lung_mask = lung_post_process(pred_mask[b])
-                post_pred_mask[b,16] = left_lung_mask
-                post_pred_mask[b,15] = right_lung_mask
+                try:
+                    left_lung_mask, right_lung_mask = lung_post_process(pred_mask[b])
+                    post_pred_mask[b,16] = left_lung_mask
+                    post_pred_mask[b,15] = right_lung_mask
+                except IndexError:
+                    print('this case does not have lungs!')
+                    shape_temp = post_pred_mask[b,16].shape
+                    post_pred_mask[b,16] = np.zeros(shape_temp)
+                    post_pred_mask[b,15] = np.zeros(shape_temp)
+                    with open(log_path + '/' + dataset_id +'/anomaly.csv','a',newline='') as f:
+                        writer = csv.writer(f)
+                        content = case_id
+                        writer.writerow([content])
 
                 right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
                 left_lung_size = np.sum(post_pred_mask[b,16],axis=(0,1,2))
@@ -252,7 +268,6 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                 print('left lung size: '+str(left_lung_size))
                 print('right lung size: '+str(right_lung_size))
 
-                #knn_model = KNN(n_neighbors=5,contamination=0.00001)
                 right_lung_save_path = plot_save_path+'/right_lung.png'
                 left_lung_save_path = plot_save_path+'/left_lung.png'
                 total_anomly_slice_number=0
@@ -272,7 +287,7 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                             post_pred_mask[b,16] = right_lung_mask
                             post_pred_mask[b,15] = np.zeros(right_lung_mask.shape)
                         else:
-                            print('need anomly detection')
+                            print('need anomaly detection')
                             print('start anomly detection at right lung')
                             try:
                                 left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
@@ -288,7 +303,7 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                                         pred_mask,post_pred_mask[b,15],right_lung_save_path,b,total_anomly_slice_number)
                                     else:
                                         left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
-                                        pred_mask,post_pred_mask[b,16],right_lung_save_path,b,total_anomly_slice_number)
+                                        pred_mask,post_pred_mask[b,16],left_lung_save_path,b,total_anomly_slice_number)
                                     post_pred_mask[b,16] = left_lung_mask
                                     post_pred_mask[b,15] = right_lung_mask
                                     right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
@@ -302,7 +317,10 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                                 with open(log_path + '/' + dataset_id +'/anomaly.csv','a',newline='') as f:
                                     writer = csv.writer(f)
                                     content = case_id
-                                    writer.writerow([content])
+                                    writer.writerow([case_id])
+
+
+                            
 
   
 
@@ -339,7 +357,7 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                                         pred_mask,post_pred_mask[b,15],right_lung_save_path,b,total_anomly_slice_number)
                                     else:
                                         left_lung_mask,right_lung_mask,total_anomly_slice_number = anomly_detection(
-                                        pred_mask,post_pred_mask[b,16],right_lung_save_path,b,total_anomly_slice_number)
+                                        pred_mask,post_pred_mask[b,16],left_lung_save_path,b,total_anomly_slice_number)
                                     post_pred_mask[b,16] = left_lung_mask
                                     post_pred_mask[b,15] = right_lung_mask
                                     right_lung_size = np.sum(post_pred_mask[b,15],axis=(0,1,2))
@@ -354,7 +372,7 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                                 with open(log_path + '/' + dataset_id +'/anomaly.csv','a',newline='') as f:
                                     writer = csv.writer(f)
                                     content = case_id
-                                    writer.writerow([content])
+                                    writer.writerow([case_id])
                 print('find number of anomaly slice: '+str(total_anomly_slice_number))
 
 
@@ -371,14 +389,6 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                 post_pred_mask[b,organ-1] = organ_region_filter_out(pred_mask[b,organ-1], organ_mask)
                 post_pred_mask[b,organ-1] = extract_topk_largest_candidates(post_pred_mask[b,organ-1], TUMOR_NUM[ORGAN_NAME[organ-1]], area_least=TUMOR_SIZE[ORGAN_NAME[organ-1]])
                 print('filter out')
-                # ###
-                # import SimpleITK as sitk
-                # out = sitk.GetImageFromArray(organ_mask)
-                # sitk.WriteImage(out,'saved_pred_organ.nii.gz')
-                # out = sitk.GetImageFromArray(pred_mask[b,organ-1].astype(np.uint8))
-                # sitk.WriteImage(out,'saved_pred_tumor.nii.gz')
-                # input()
-                # ###
             else:
                 post_pred_mask[b,organ-1] = pred_mask[b,organ-1]
     return post_pred_mask,total_anomly_slice_number
@@ -484,8 +494,6 @@ def find_best_iter_and_masks(lung_mask):
 
     left_lung_mask = left_lung_erosion_mask
     right_lung_mask = right_lung_erosion_mask
-    # left_lung_mask = ndimage.binary_dilation(left_lung_erosion_mask, structure=struct2,iterations=iter)
-    # right_lung_mask = ndimage.binary_dilation(right_lung_erosion_mask, structure=struct2,iterations=iter)
     print('dilation complete')
     left_lung_mask_fill_hole = ndimage.binary_fill_holes(left_lung_mask)
     right_lung_mask_fill_hole = ndimage.binary_fill_holes(right_lung_mask)
@@ -496,19 +504,8 @@ def find_best_iter_and_masks(lung_mask):
     return left_lung_mask_fill_hole,right_lung_mask_fill_hole
 
 
-# def anomly_detection(pred_mask,post_pred_mask,model,save_path,batch):
-#     lung_df = get_dataframe(post_pred_mask)
-#     lung_pred_df = fit_model(model,lung_df)
-#     plot_anomalies(lung_pred_df,save_dir=save_path)
-#     anomly_df = lung_pred_df[lung_pred_df['Predictions']==1]
-#     anomly_slice = anomly_df['slice_index'].to_numpy()
-#     for s in anomly_slice:
-#         pred_mask[batch,15,:,:,s]=0
-#         pred_mask[batch,16,:,:,s]=0
-#     left_lung_mask, right_lung_mask = lung_post_process(pred_mask[batch])
-#     return left_lung_mask, right_lung_mask
 
-def anomly_detection(pred_mask, post_pred_mask, save_path, batch, anomly_num):
+def anomly_detection(pred_mask,post_pred_mask,save_path,batch,anomly_num):
     total_anomly_slice_number = anomly_num
     df = get_dataframe(post_pred_mask)
     # lung_pred_df = fit_model(model,lung_df)
@@ -566,6 +563,14 @@ def get_dataframe(post_pred_mask):
     target_array_sum = np.sum(target_array,axis=(0,1))
     slice_index = np.arange(target_array.shape[-1])
     df = pd.DataFrame({'slice_index':slice_index,'array_sum':target_array_sum})
+    return df
+
+def fit_model(model, data, column='array_sum'):
+    # fit the model and predict it
+    df = data.copy()
+    data_to_predict = data[column].to_numpy().reshape(-1, 1)
+    predictions = model.fit_predict(data_to_predict)
+    df['Predictions'] = predictions
     return df
 
 def plot_anomalies(df, x='slice_index', y='array_sum',save_dir=None):
@@ -691,20 +696,14 @@ def save_organ_label(batch,save_dir,input_transform,organ_index):
 
     post_transforms = Compose([
         Invertd(
-            keys=["label",organ_name],#, 'one_channel_label_v1', 'one_channel_label_v2'], #, 'split_label'
+            keys=[organ_name],
             transform=input_transform,
             orig_keys="image",
             nearest_interp=True,
             to_tensor=True,
         ),
-        # SaveImaged(keys="label", 
-        #         meta_keys="label_meta_dict" , 
-        #         output_dir=save_dir, 
-        #         output_postfix="gt", 
-        #         resample=False
-        # ),
         SaveImaged(keys=organ_name, 
-                meta_keys="label_meta_dict" , 
+                meta_keys="image_meta_dict", 
                 output_dir=save_dir, 
                 output_postfix=organ_name, 
                 resample=False,
@@ -714,33 +713,46 @@ def save_organ_label(batch,save_dir,input_transform,organ_index):
     
     BATCH = [post_transforms(i) for i in decollate_batch(batch)]
 
-
-def visualize_label(batch, save_dir, input_transform):
-    ### function: save the prediction result into dir
-    ## Input
-    ## batch: the batch dict output from the monai dataloader
-    ## one_channel_label: the predicted reuslt with same shape as label
-    ## save_dir: the directory for saving
-    ## input_transform: the dataloader transform
+def invert_transform(invert_key = str,batch = None, input_transform = None ):
     post_transforms = Compose([
         Invertd(
-            keys=["label",'psedu_label'],#, 'one_channel_label_v1', 'one_channel_label_v2'], #, 'split_label'
+            keys=invert_key,
             transform=input_transform,
             orig_keys="image",
             nearest_interp=True,
             to_tensor=True,
         ),
-        SaveImaged(keys="label", 
-                meta_keys="label_meta_dict" , 
-                output_dir=save_dir, 
-                output_postfix="original_label", 
-                resample=False
+    ])
+    BATCH = [post_transforms(i) for i in decollate_batch(batch)]
+    return BATCH
+
+
+def visualize_label(batch, save_dir, input_transform):
+    ### function: save the prediction result into dir
+    ## Input
+    ## batch: the batch dict output from the monai dataloader
+    ## save_dir: the directory for saving
+    ## input_transform: the dataloader transform
+    post_transforms = Compose([
+        Invertd(
+            keys=['pseudo_label'],
+            transform=input_transform,
+            orig_keys="image",
+            nearest_interp=True,
+            to_tensor=True,
         ),
-        SaveImaged(keys='psedu_label', 
-                meta_keys="label_meta_dict" , 
+        # SaveImaged(keys="label", 
+        #         meta_keys="label_meta_dict" , 
+        #         output_dir=save_dir, 
+        #         output_postfix="original_label", 
+        #         resample=False
+        # ),
+        SaveImaged(keys='pseudo_label', 
+                meta_keys="image_meta_dict" , 
                 output_dir=save_dir, 
-                output_postfix="pseudo_label", 
-                resample=False
+                output_postfix="pseudo_label",
+                resample=False,
+                separate_folder=False,
         ),
     ])
     
@@ -762,34 +774,85 @@ def merge_label(pred_bmask, name):
         for item in transfer_mapping_v2:
             src, tgt = item
             merged_label_v2[b][0][pred_bmask[b][src-1]==1] = tgt
-            # organ_index.append(src-1)
-        # organ_index = torch.tensor(organ_index).cuda()
-        # predicted_prob = pred_sigmoid[b][organ_index]
+
     return merged_label_v1, merged_label_v2
 
-def psedu_label_all_organ(pred_bmask):
+def pseudo_label_all_organ(pred_bmask):
     B, C, W, H, D = pred_bmask.shape
-    psedu_label = torch.zeros(B,1,W,H,D).cuda()
+    pseudo_label = torch.zeros(B,1,W,H,D).cuda()
     for b in range(B):
         template_key ='all'
-        psedu_label_mapping = PSEDU_LABEL_ALL[template_key]
-        for item in psedu_label_mapping:
+        pseudo_label_mapping = PSEUDO_LABEL_ALL[template_key]
+        for item in pseudo_label_mapping:
             src,tgt = item
-            psedu_label[b][0][pred_bmask[b][src-1]==1] = tgt
-    return psedu_label
+            pseudo_label[b][0][pred_bmask[b][src-1]==1] = tgt
+    return pseudo_label
 
-def psedu_label_single_organ(pred_bmask,organ_index):
+def pseudo_label_single_organ(pred_bmask,organ_index):
     B, C, W, H, D = pred_bmask.shape
-    psedu_label_single_organ = torch.zeros(B,1,W,H,D).cuda()
+    pseudo_label_single_organ = torch.zeros(B,1,W,H,D).cuda()
     for b in range(B):
         template_key = ORGAN_NAME[organ_index-1]
-        psedu_label_single_organ_mapping = PSEDU_LABEL_ALL[template_key]
-        for item in psedu_label_single_organ_mapping:
+        pseudo_label_single_organ_mapping = PSEUDO_LABEL_ALL[template_key]
+        for item in pseudo_label_single_organ_mapping:
             src,tgt = item
-            psedu_label_single_organ[b][0][pred_bmask[b][src-1]==1] = tgt
-    return psedu_label_single_organ
+            pseudo_label_single_organ[b][0][pred_bmask[b][src-1]==1] = tgt
+    return pseudo_label_single_organ
+
+def create_entropy_map(pred,organ_index):
+    B,C,W,H,D = pred.shape
+    entropy_map = torch.zeros(B,1,W,H,D).cuda()
+    for b in range(B):
+        organ_soft_pred = pred[b,organ_index-1]
+        organ_uncertainty = torch.special.entr(organ_soft_pred)
+        entropy_map[b][0] = organ_uncertainty
+    return entropy_map
+
+def create_entropy_map_nnunet(pred_softmax):
+    organ_soft_pred = torch.from_numpy(pred_softmax.copy())
+    organ_uncertainty = torch.special.entr(organ_soft_pred)
+    return organ_uncertainty
+
+def entropy_post_process(entropy_map):
+    entropy_prob_map = entropy_map.copy()
+    entropy_mask = np.zeros(entropy_map.shape)
+    threshold = 0.05
+    struct2 = ndimage.generate_binary_structure(3, 3)
+    entropy_threshold = entropy_map > threshold
+    entropy_threshold_erosion =  ndimage.binary_erosion(entropy_threshold, structure=struct2,iterations=2)
+    entropy_threshold_dilation = ndimage.binary_dilation(entropy_threshold_erosion,structure=struct2,iterations=2)
+    entropy_mask[entropy_threshold_dilation==1]=1
+    entropy_prob_map[entropy_mask!=1]=0
+    return entropy_prob_map,entropy_mask
 
 
+def save_soft_pred(pred_soft,pred_hard_post,organ_index):
+    single_organ_binary_mask = pseudo_label_single_organ(pred_hard_post,organ_index)
+    struct2 = ndimage.generate_binary_structure(3, 3)
+    
+    B,C,W,H,D = pred_hard_post.shape 
+    organ_pred_soft_save = torch.zeros(B,1,W,H,D).cuda()
+    for b in range(B):
+        binary_mask = single_organ_binary_mask[b,0]
+        binary_mask_dilation = ndimage.binary_dilation(binary_mask.cpu().numpy(),structure=struct2,iterations=1)
+        organ_pred_soft = pred_soft[b,organ_index-1]
+        organ_pred_soft[binary_mask_dilation==0]=0
+        organ_pred_soft_save[b][0] = organ_pred_soft
+
+    return organ_pred_soft_save
+
+        
+def std_post_process(std_map):
+    std_map_float = std_map.copy()
+    std_mask = np.zeros(std_map.shape)
+    threshold = 0.1
+    struct2 = ndimage.generate_binary_structure(3, 3)
+    std_threshold = std_map > threshold
+    std_threshold_erosion = ndimage.binary_erosion(std_threshold,structure=struct2,iterations=2)
+    std_threshold_dilation = ndimage.binary_dilation(std_threshold_erosion,structure=struct2,iterations=2)
+    std_mask[std_threshold_dilation==1]=1
+    std_map_float[std_mask!=1]=0
+    return std_map_float,std_mask
 
 
 def get_key(name):
@@ -801,6 +864,27 @@ def get_key(name):
     else:
         template_key = name[0:2]
     return template_key
+
+
+def calculate_metrics(attention_ideal,attention_real):
+    ## organ_metrics_data: attention/overlap/uncertainty
+
+    tp = np.sum(np.multiply(attention_ideal,attention_real),axis = (0,1,2))
+    fp = np.sum(np.multiply(attention_ideal!=1,attention_real),axis = (0,1,2))
+    fn = np.sum(np.multiply(attention_ideal,attention_real!=1),axis = (0,1,2))
+    tn = np.sum(np.multiply(attention_ideal!=1,attention_real!=1),axis = (0,1,2))
+
+
+    sensitivity = tp/(tp+fn)
+    
+    specificity= tn/(tn+fp)
+    
+    precision = tp/(tp+fp)
+    
+    return sensitivity,specificity,precision
+
+
+
 
 
 def dice_score(preds, labels, spe_sen=False):  # on GPU
@@ -875,6 +959,60 @@ def check_data(dataset_check):
     plt.title("label")
     plt.imshow(label[0, :, :, 150].detach().cpu())
     plt.show()
+
+def contrast_adjustment(ct_data,lowest,highest):
+    ct_clip = np.clip(ct_data,lowest,highest)
+    ct_min = np.min(ct_clip)
+    ct_max = np.max(ct_clip)
+    slope = (1.0-0.0)/(ct_max-ct_min)
+    intercept = 0.0 - (slope*ct_min)
+    ct_adjustment = (ct_clip*slope+intercept)*255
+    return ct_adjustment
+
+def create_heatmap(consistency_map):
+    colormap = cv2.COLORMAP_JET
+    std = cv2.normalize(consistency_map, None, 0, 255, cv2.NORM_MINMAX)
+    heatmap = cv2.applyColorMap(std.astype(np.uint8), colormap)
+    heatmap[std==0]=0
+    return heatmap
+
+def draw_contours(ct,mask,color):
+    ret,thresh = cv2.threshold(mask,50,255,cv2.THRESH_BINARY)
+    contours,hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    contour_img = cv2.drawContours(ct,contours,-1,color,2)
+
+    return ct
+def draw_transparent_contours(ct,mask,color):
+    ret,thresh = cv2.threshold(mask,50,255,cv2.THRESH_BINARY)
+    contours,hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    zero_img = np.zeros_like(ct)
+    contour_img = cv2.drawContours(zero_img,contours,-1,color,2)
+    ct_with_contour = cv2.addWeighted(ct, 1, contour_img, 0.4, 0)
+    
+    return ct_with_contour
+
+
+
+def create_color_mask(mask,color):
+    color_mask = cv2.merge([mask]*3) * color
+    return color_mask
+
+def calculate_dice(mask1,mask2):
+    intersection = np.sum(mask1*mask2)
+    sum_masks = np.sum(mask1)+np.sum(mask2)
+    smooth = 1e-4
+    dice = (2.*intersection+smooth)/(sum_masks+smooth)
+    return dice
+
+
+def find_components(mask):
+    label_out = cc3d.connected_components(mask, connectivity=26)
+    areas = {}
+    for label, extracted in cc3d.each(label_out, binary=True, in_place=True):
+        areas[label] = fastremap.foreground(extracted)
+    candidates = sorted(areas.items(), key=lambda item: item[1], reverse=True)
+    return label_out , candidates
+
 
 if __name__ == "__main__":
     threshold_organ(torch.zeros(1,12,1))    
