@@ -277,78 +277,113 @@ def get_loader(args):
             ToTensord(keys=["image", "label", "post_label"]),
         ]
     )
-
-    val_transforms = Compose(
-        [
-            LoadImageh5d(keys=["image", "label"]),
-            AddChanneld(keys=["image", "label"]),
-            Orientationd(keys=["image", "label"], axcodes="RAS"),
-            # ToTemplatelabeld(keys=['label']),
-            # RL_Splitd(keys=['label']),
-            Spacingd(
-                keys=["image", "label"],
-                pixdim=(args.space_x, args.space_y, args.space_z),
-                mode=("bilinear", "nearest"),
-            ), # process h5 to here
-            ScaleIntensityRanged(
-                keys=["image"],
-                a_min=args.a_min,
-                a_max=args.a_max,
-                b_min=args.b_min,
-                b_max=args.b_max,
-                clip=True,
-            ),
-            CropForegroundd(keys=["image", "label", "post_label"], source_key="image"),
-            ToTensord(keys=["image", "label", "post_label"]),
-        ]
+    if args.original_label:
+        val_transforms = Compose(
+            [
+                LoadImaged(keys=["image", "label"]),
+                AddChanneld(keys=["image", "label"]),
+                Orientationd(keys=["image", "label"], axcodes="RAS"),
+                # ToTemplatelabeld(keys=['label']),
+                # RL_Splitd(keys=['label']),
+                Spacingd(
+                    keys=["image", "label"],
+                    pixdim=(args.space_x, args.space_y, args.space_z),
+                    mode=("bilinear", "nearest"),
+                ), # process h5 to here
+                ScaleIntensityRanged(
+                    keys=["image"],
+                    a_min=args.a_min,
+                    a_max=args.a_max,
+                    b_min=args.b_min,
+                    b_max=args.b_max,
+                    clip=True,
+                ),
+                CropForegroundd(keys=["image", "label"], source_key="image"),
+                ToTensord(keys=["image", "label"]),
+            ]
+        )
+    else:
+        val_transforms = Compose(
+            [
+                LoadImaged(keys=["image"]),
+                AddChanneld(keys=["image"]),
+                Orientationd(keys=["image"], axcodes="RAS"),
+                # ToTemplatelabeld(keys=['label']),
+                # RL_Splitd(keys=['label']),
+                Spacingd(
+                    keys=["image"],
+                    pixdim=(args.space_x, args.space_y, args.space_z),
+                    mode=("bilinear"),
+                ), # process h5 to here
+                ScaleIntensityRanged(
+                    keys=["image"],
+                    a_min=args.a_min,
+                    a_max=args.a_max,
+                    b_min=args.b_min,
+                    b_max=args.b_max,
+                    clip=True,
+                ),
+                CropForegroundd(keys=["image"], source_key="image"),
+                ToTensord(keys=["image"]),
+            ]
     )
 
     ## training dict part
-    train_img = []
-    train_lbl = []
-    train_post_lbl = []
-    train_name = []
+    # train_img = []
+    # train_lbl = []
+    # train_post_lbl = []
+    # train_name = []
 
-    data_dicts_train = [{'image': image, 'label': label, 'post_label': post_label, 'name': name}
-                for image, label, post_label, name in zip(train_img, train_lbl, train_post_lbl, train_name)]
-    print('train len {}'.format(len(data_dicts_train)))
+    # data_dicts_train = [{'image': image, 'label': label, 'post_label': post_label, 'name': name}
+    #             for image, label, post_label, name in zip(train_img, train_lbl, train_post_lbl, train_name)]
+    # print('train len {}'.format(len(data_dicts_train)))
 
 
     ## validation dict part
-    val_img = []
-    val_lbl = []
-    val_post_lbl = []
-    val_name = []
-    for item in args.dataset_list:
-        for line in open(args.data_txt_path + item + '_test.txt'):
-            name = line.strip().split()[1].split('.')[0]
-            val_img.append(args.data_root_path + line.strip().split()[0])
-            val_lbl.append(args.data_root_path + line.strip().split()[1])
-            val_post_lbl.append(args.data_root_path + name.replace('label', 'post_label') + '.h5')
-            val_name.append(name)
-    data_dicts_val = [{'image': image, 'label': label, 'post_label': post_label, 'name': name}
-                for image, label, post_label, name in zip(val_img, val_lbl, val_post_lbl, val_name)]
-    print('val len {}'.format(len(data_dicts_val)))
+    # val_img = []
+    # val_lbl = []
+    # val_post_lbl = []
+    # val_name = []
+    # for item in args.dataset_list:
+    #     for line in open(args.data_txt_path + item + '_test.txt'):
+    #         name = line.strip().split()[1].split('.')[0]
+    #         val_img.append(args.data_root_path + line.strip().split()[0])
+    #         val_lbl.append(args.data_root_path + line.strip().split()[1])
+    #         val_post_lbl.append(args.data_root_path + name.replace('label', 'post_label') + '.h5')
+    #         val_name.append(name)
+    # data_dicts_val = [{'image': image, 'label': label, 'post_label': post_label, 'name': name}
+    #             for image, label, post_label, name in zip(val_img, val_lbl, val_post_lbl, val_name)]
+    # print('val len {}'.format(len(data_dicts_val)))
 
 
     ## test dict part
-    test_img = []
-    test_lbl = []
-    test_post_lbl = []
-    test_name = []
-    test_name_img=[]
-    for item in args.dataset_list:
-        for line in open(args.data_txt_path + item + '_test.txt'):
-            name = line.strip().split()[1].split('.')[0]
-            name_img = line.strip().split()[0].split('.')[0]
-            test_img.append(args.data_root_path + line.strip().split()[0])
-            test_lbl.append(args.data_root_path + line.strip().split()[1])
-            test_post_lbl.append(args.data_root_path + name.replace('label', 'post_label') + '.h5')
-            test_name.append(name)
-            test_name_img.append(name_img)
-    data_dicts_test = [{'image': image, 'label': label, 'post_label': post_label, 'name': name,'name_img':name_img}
-                for image, label, post_label, name,name_img in zip(test_img, test_lbl, test_post_lbl, test_name,test_name_img)]
-    print('test len {}'.format(len(data_dicts_test)))
+    if args.original_label:
+        test_img = []
+        test_lbl = []
+        test_name_lbl = []
+        test_name_img=[]
+        for item in args.dataset_list:
+            for line in open(args.data_txt_path + item + '_test.txt'):
+                name_lbl = line.strip().split()[1].split('.')[0]
+                name_img = line.strip().split()[0].split('.')[0]
+                test_img.append(args.data_root_path + line.strip().split()[0])
+                test_lbl.append(args.data_root_path + line.strip().split()[1])
+                test_name_lbl.append(name_lbl)
+                test_name_img.append(name_img)
+        data_dicts_test = [{'image': image, 'label': label, 'name_lbl': name_lbl,'name_img':name_img}
+                    for image, label, name_lbl,name_img in zip(test_img, test_lbl, test_name_lbl,test_name_img)]
+        print('test len {}'.format(len(data_dicts_test)))
+    else:
+        test_img = []
+        test_name_img=[]
+        for item in args.dataset_list:
+            for line in open(args.data_txt_path + item + '_test.txt'):
+                name_img = line.strip().split()[0].split('.')[0]
+                test_img.append(args.data_root_path + line.strip().split()[0])
+                test_name_img.append(name_img)
+        data_dicts_test = [{'image': image,'name_img':name_img}
+                    for image, name_img in zip(test_img, test_name_img)]
+        print('test len {}'.format(len(data_dicts_test)))
 
     if args.phase == 'train':
         if args.cache_dataset:
@@ -381,7 +416,7 @@ def get_loader(args):
             test_dataset = CacheDataset(data=data_dicts_test, transform=val_transforms, cache_rate=args.cache_rate)
         else:
             test_dataset = Dataset(data=data_dicts_test, transform=val_transforms)
-        test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=4, collate_fn=list_data_collate)
+        test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, collate_fn=list_data_collate)
         return test_loader, val_transforms
 
 if __name__ == "__main__":
