@@ -14,7 +14,8 @@ pip install 'monai[all]'
 pip install --upgrade monai==0.9.0
 pip install -r requirements.txt
 cd pretrained_checkpoints
-wget https://www.dropbox.com/s/6ggd0gq5qddahwh/epoch_450.pth
+wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
+wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
 cd ..
 ```
 
@@ -37,6 +38,14 @@ wget https://www.dropbox.com/s/6vp6o8tydb8waby/13_AbdomenCT-12organ.tar.gz # 13 
 wget https://www.dropbox.com/s/ipkeaelyethy3sn/Totalsegmentator_dataset.zip # Totalsegmentor
 ```
 
+#### 1. Generate dataset list
+
+#### 2. 
+```bash
+source /data/zzhou82/environments/universal/bin/activate
+cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
+CUDA_VISIBLE_DEVICES=6 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --log_name /data/zzhou82/project/LargePseudoDataset --dataset_list PAOT_03 --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_03.txt
+```
 
 #### Generate pseudo labels for different datasets
 
