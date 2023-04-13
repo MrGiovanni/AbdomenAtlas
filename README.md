@@ -39,6 +39,9 @@ wget https://www.dropbox.com/s/ipkeaelyethy3sn/Totalsegmentator_dataset.zip # To
 ```
 
 #### 1. Generate dataset list
+```bash
+python -W ignore generate_datalist.py --data_path /medical_backup/PublicAbdominalData --dataset_name 18_FLARE23 --folder imagesTr2200 labelsTr2200 --out ./dataset/dataset_list --save_file PAOT_18_wt_label.txt
+```
 
 #### 2. 
 ```bash
