@@ -50,8 +50,10 @@ python -W ignore generate_datalist.py --data_path /medical_backup/PublicAbdomina
 source /data/zzhou82/environments/universal/bin/activate
 cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
 CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wt_label --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wt_label_unet.txt
+CUDA_VISIBLE_DEVICES=1 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wo_label --data_root_path /medical_backup/PublicAbdominalData/  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wo_label_unet.txt
 
-CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone unet --log_name /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_03 --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_03.txt
+CUDA_VISIBLE_DEVICES=2 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wt_label --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wt_label_swinunetr.txt
+CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wo_label --data_root_path /medical_backup/PublicAbdominalData/  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wo_label_swinunetr.txt
 ```
 
 #### Generate pseudo labels for different datasets
