@@ -28,7 +28,7 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 
 
 def validation(model, ValLoader, val_transforms, args):
-    save_dir = args.log_name
+    save_dir = args.save_dir
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
         # os.makedirs(save_dir+'/predict')
@@ -88,7 +88,7 @@ def validation(model, ValLoader, val_transforms, args):
             pred_sigmoid = F.sigmoid(pred)
         
         #pred_hard = threshold_organ(pred_sigmoid, organ=args.threshold_organ, threshold=args.threshold)
-        pred_hard = threshold_organ(pred_sigmoid)
+        pred_hard = threshold_organ(pred_sigmoid,args)
         pred_hard = pred_hard.cpu()
         torch.cuda.empty_cache()
 
@@ -104,7 +104,7 @@ def validation(model, ValLoader, val_transforms, args):
                 os.makedirs(organ_seg_save_path)
             organ_index_all = TEMPLATE['all']
             for organ_index in organ_index_all:
-                pseudo_label_single = pseudo_label_single_organ(pred_hard_post,organ_index)
+                pseudo_label_single = pseudo_label_single_organ(pred_hard_post,organ_index,args)
                 organ_name = ORGAN_NAME_LOW[organ_index-1]
                 batch[organ_name]=pseudo_label_single.cpu()
                 BATCH = invert_transform(organ_name,batch,val_transforms)
@@ -115,7 +115,7 @@ def validation(model, ValLoader, val_transforms, args):
                 nib.save(organ_save,new_name)
 
 
-            pseudo_label_all = pseudo_label_all_organ(pred_hard_post)
+            pseudo_label_all = pseudo_label_all_organ(pred_hard_post,args)
             batch['pseudo_label'] = pseudo_label_all.cpu()
             BATCH = invert_transform('pseudo_label',batch,val_transforms)
             pseudo_label_invertd = np.squeeze(BATCH[0]['pseudo_label'].numpy(),axis = 0)
@@ -146,7 +146,7 @@ def validation(model, ValLoader, val_transforms, args):
             if not os.path.isdir(organ_soft_pred_save_path):
                 os.makedirs(organ_soft_pred_save_path)
             for organ_idx in organ_index_target:
-                organ_pred_soft_save = save_soft_pred(pred_sigmoid,pred_hard_post,organ_idx)
+                organ_pred_soft_save = save_soft_pred(pred_sigmoid,pred_hard_post,organ_idx,args)
                 organ_name_target = ORGAN_NAME_LOW[organ_idx-1]
                 batch[organ_name_target] = organ_pred_soft_save.cpu()
                 BATCH = invert_transform(organ_name_target,batch,val_transforms)
@@ -178,7 +178,7 @@ def validation(model, ValLoader, val_transforms, args):
                     for s in range(first_non_zero_idx,right_lung_data.shape[-1]):
                         if len(np.unique(ct_data[:,:,s]))!= 1 and right_lung_data_sum[s] ==0:
                             print('start writing csv as slice: '+str(s+1))
-                            with open(save_dir + '/' + name_img[0].split('/')[0]+'/'+args.backbone+'_anomaly.csv','a',newline='') as f:
+                            with open(os.path.join(save_dir,name_img[0].split('/')[0],args.backbone+'_anomaly.csv'),'a',newline='') as f:
                                 writer = csv.writer(f)
                                 content = name_img[0].split('/')[-1]
                                 writer.writerow([content,organ_name[0],s+1])
@@ -190,12 +190,15 @@ def validation(model, ValLoader, val_transforms, args):
                     for s in range(first_non_zero_idx,left_lung_data.shape[-1]):
                         if len(np.unique(ct_data[:,:,s]))!= 1 and left_lung_data_sum[s] ==0:
                             print('start writing csv as slice: '+str(s+1))
-                            with open(save_dir + '/' + name_img[0].split('/')[0]+'/'+args.backbone+'_anomaly.csv','a',newline='') as f:
+                            with open(os.path.join(save_dir,name_img[0].split('/')[0],args.backbone+'_anomaly.csv'),'a',newline='') as f:
                                 writer = csv.writer(f)
                                 content = name_img[0].split('/')[-1]
                                 writer.writerow([content,organ_name[0],s+1])
                                 writer.writerow([content,organ_name[1],s+1])
 
+
+
+            
         torch.cuda.empty_cache()
     
 
@@ -214,7 +217,7 @@ def main():
     parser.add_argument("--device")
     parser.add_argument("--epoch", default=0)
     ## logging
-    parser.add_argument('--log_name', default='Nvidia/old_fold0', help='The path resume from checkpoint')
+    parser.add_argument('--save_dir', default='Nvidia/old_fold0', help='The dataset save path')
     ## model load
     parser.add_argument('--resume', default='./out/Nvidia/old_fold0/aepoch_500.pth', help='The path resume from checkpoint')
     parser.add_argument('--pretrain', default='./pretrained_weights/swin_unetr.base_5000ep_f48_lr2e-4_pretrained.pt', 
@@ -255,10 +258,11 @@ def main():
     parser.add_argument('--store_entropy', action="store_true", default=False, help='whether save entropy map')
     parser.add_argument('--store_soft_pred', action="store_true", default=False, help='whether save soft prediction')
     parser.add_argument('--cache_rate', default=0.6, type=float, help='The percentage of cached data in total')
-
+    parser.add_argument('--cpu',action="store_true", default=False, help='whether use cpu')
     parser.add_argument('--threshold_organ', default='Pancreas Tumor')
     parser.add_argument('--threshold', default=0.6, type=float)
     parser.add_argument('--backbone', default='unet', help='backbone [swinunetr or unet]')
+    parser.add_argument('--create_dataset',action="store_true", default=False, help='whether create atlas8k')
 
     args = parser.parse_args()
 

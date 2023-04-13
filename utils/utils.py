@@ -231,12 +231,16 @@ TUMOR_ORGAN = {
 }
 
 
-def organ_post_process(pred_mask, organ_list,save_dir,args):
+def organ_post_process(pred_mask, organ_list,case_dir,args):
     post_pred_mask = np.zeros(pred_mask.shape)
-    plot_save_path = os.path.join(save_dir,'backbones',args.backbone)
-    log_path = args.log_name
-    dataset_id = save_dir.split('/')[-2]
-    case_id = save_dir.split('/')[-1]
+    dataset_id = case_dir.split('/')[-2]
+    case_id = case_dir.split('/')[-1]
+    if args.create_dataset:
+        plot_save_path = os.path.join(case_dir,'average')
+        anomaly_csv_path = os.path.join(args.save_dir,dataset_id,'average_anomaly.csv')
+    else:
+        plot_save_path = os.path.join(case_dir,'backbones',args.backbone)
+        anomaly_csv_path = os.path.join(args.save_dir,dataset_id,args.backbone+'_anomaly.csv')
     if not os.path.isdir(plot_save_path):
         os.makedirs(plot_save_path)
     for b in range(pred_mask.shape[0]):
@@ -257,7 +261,7 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                     shape_temp = post_pred_mask[b,16].shape
                     post_pred_mask[b,16] = np.zeros(shape_temp)
                     post_pred_mask[b,15] = np.zeros(shape_temp)
-                    with open(log_path + '/' + dataset_id +'/anomaly.csv','a',newline='') as f:
+                    with open(anomaly_csv_path,'a',newline='') as f:
                         writer = csv.writer(f)
                         content = case_id
                         writer.writerow([content])
@@ -268,8 +272,8 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                 print('left lung size: '+str(left_lung_size))
                 print('right lung size: '+str(right_lung_size))
 
-                right_lung_save_path = plot_save_path+'/right_lung.png'
-                left_lung_save_path = plot_save_path+'/left_lung.png'
+                right_lung_save_path = os.path.join(plot_save_path,'right_lung.png')
+                left_lung_save_path = os.path.join(plot_save_path,'left_lung.png')
                 total_anomly_slice_number=0
 
                 if right_lung_size>left_lung_size:
@@ -314,7 +318,7 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                                 post_pred_mask[b,16] = left_lung_mask
                                 post_pred_mask[b,15] = right_lung_mask
                                 print("cannot seperate two lungs, writing csv")
-                                with open(log_path + '/' + dataset_id +'/anomaly.csv','a',newline='') as f:
+                                with open(anomaly_csv_path,'a',newline='') as f:
                                     writer = csv.writer(f)
                                     content = case_id
                                     writer.writerow([case_id])
@@ -369,7 +373,7 @@ def organ_post_process(pred_mask, organ_list,save_dir,args):
                                 post_pred_mask[b,16] = left_lung_mask
                                 post_pred_mask[b,15] = right_lung_mask
                                 print("cannot seperate two lungs, writing csv")
-                                with open(log_path + '/' + dataset_id +'/anomaly.csv','a',newline='') as f:
+                                with open(anomaly_csv_path,'a',newline='') as f:
                                     writer = csv.writer(f)
                                     content = case_id
                                     writer.writerow([case_id])
@@ -677,7 +681,7 @@ def keep_topk_largest_connected_object(npy_mask, k, area_least, out_mask, out_la
         if candidates[i][1] > area_least:
             out_mask[labels_out == int(candidates[i][0])] = out_label
 
-def threshold_organ(data, organ=None, threshold=None):
+def threshold_organ(data, args,organ=None, threshold=None):
     ### threshold the sigmoid value to hard label
     ## data: sigmoid value
     ## threshold_list: a list of organ threshold
@@ -687,7 +691,10 @@ def threshold_organ(data, organ=None, threshold=None):
         THRESHOLD_DIC[organ] = threshold
     for key, value in THRESHOLD_DIC.items():
         threshold_list.append(value)
-    threshold_list = torch.tensor(threshold_list).repeat(B, 1).reshape(B,len(threshold_list),1,1,1).cuda()
+    if args.cpu:
+        threshold_list = torch.tensor(threshold_list).repeat(B, 1).reshape(B,len(threshold_list),1,1,1)
+    else:
+        threshold_list = torch.tensor(threshold_list).repeat(B, 1).reshape(B,len(threshold_list),1,1,1).cuda()
     pred_hard = data > threshold_list
     return pred_hard
 
@@ -777,9 +784,12 @@ def merge_label(pred_bmask, name):
 
     return merged_label_v1, merged_label_v2
 
-def pseudo_label_all_organ(pred_bmask):
+def pseudo_label_all_organ(pred_bmask,args):
     B, C, W, H, D = pred_bmask.shape
-    pseudo_label = torch.zeros(B,1,W,H,D).cuda()
+    if args.cpu:
+        pseudo_label = torch.zeros(B,1,W,H,D)
+    else:
+        pseudo_label = torch.zeros(B,1,W,H,D).cuda()
     for b in range(B):
         template_key ='all'
         pseudo_label_mapping = PSEUDO_LABEL_ALL[template_key]
@@ -788,9 +798,12 @@ def pseudo_label_all_organ(pred_bmask):
             pseudo_label[b][0][pred_bmask[b][src-1]==1] = tgt
     return pseudo_label
 
-def pseudo_label_single_organ(pred_bmask,organ_index):
+def pseudo_label_single_organ(pred_bmask,organ_index,args):
     B, C, W, H, D = pred_bmask.shape
-    pseudo_label_single_organ = torch.zeros(B,1,W,H,D).cuda()
+    if args.cpu:
+        pseudo_label_single_organ = torch.zeros(B,1,W,H,D)
+    else:
+        pseudo_label_single_organ = torch.zeros(B,1,W,H,D).cuda()
     for b in range(B):
         template_key = ORGAN_NAME[organ_index-1]
         pseudo_label_single_organ_mapping = PSEUDO_LABEL_ALL[template_key]
@@ -826,8 +839,8 @@ def entropy_post_process(entropy_map):
     return entropy_prob_map,entropy_mask
 
 
-def save_soft_pred(pred_soft,pred_hard_post,organ_index):
-    single_organ_binary_mask = pseudo_label_single_organ(pred_hard_post,organ_index)
+def save_soft_pred(pred_soft,pred_hard_post,organ_index,args):
+    single_organ_binary_mask = pseudo_label_single_organ(pred_hard_post,organ_index,args)
     struct2 = ndimage.generate_binary_structure(3, 3)
     
     B,C,W,H,D = pred_hard_post.shape 
