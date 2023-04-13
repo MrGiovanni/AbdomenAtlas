@@ -1,4 +1,4 @@
-# LargePseudoDataset
+# Large Pseudo Dataset
 
 #### Setup
 ```
@@ -44,7 +44,7 @@ wget https://www.dropbox.com/s/ipkeaelyethy3sn/Totalsegmentator_dataset.zip # To
 ```bash
 source /data/zzhou82/environments/universal/bin/activate
 cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=6 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --log_name /data/zzhou82/project/LargePseudoDataset --dataset_list PAOT_03 --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_03.txt
+CUDA_VISIBLE_DEVICES=6 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --log_name /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_03 --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_03.txt
 ```
 
 #### Generate pseudo labels for different datasets
