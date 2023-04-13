@@ -45,11 +45,13 @@ python -W ignore generate_datalist.py --data_path /medical_backup/PublicAbdomina
 python -W ignore generate_datalist.py --data_path /medical_backup/PublicAbdominalData --dataset_name 18_FLARE23 --folder unlabeledTr1800 --out ./dataset/dataset_list --save_file PAOT_18_wo_label.txt
 ```
 
-#### 2. 
+#### 2. Make AI predictions
 ```bash
 source /data/zzhou82/environments/universal/bin/activate
 cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=6 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --log_name /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_03 --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_03.txt
+CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wt_label --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wt_label_unet.txt
+
+CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone unet --log_name /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_03 --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_03.txt
 ```
 
 #### Generate pseudo labels for different datasets
