@@ -24,8 +24,12 @@ def generate_list(args):
         else:
             print('Please check the number of your images and labels')
         # files = [files[i] + '\t' + files[i + len(files) // 2] for i in range(len(files) // 2)]
-    with open(Path(args.out).joinpath(f"PAOT_{args.dataset_name}_test.txt"), 'w') as f:
-        f.write('\n'.join(files))
+    if len(args.flag)>1:
+        with open(Path(args.out).joinpath(f"PAOT_{args.dataset_name}_withlabel_test.txt"), 'w') as f:
+            f.write('\n'.join(files)) 
+    else:
+        with open(Path(args.out).joinpath(f"PAOT_{args.dataset_name}_withoutlabel_test.txt"), 'w') as f:
+            f.write('\n'.join(files))
 
 
 def main():
