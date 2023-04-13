@@ -347,7 +347,7 @@ def get_loader(args):
     test_post_lbl = []
     test_name = []
     for item in args.dataset_list:
-        for line in open(args.data_txt_path + item +'_test.txt'):
+        for line in open(args.data_txt_path + item +'.txt'):
             name = line.strip().split()[1].split('.')[0]
             if int(name[0:2]) == 1: #and (name[0:2] + '_' + name[17:19]) == '10_03'
                 test_img.append(args.data_root_path + line.strip().split()[0])
