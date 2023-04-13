@@ -4,3 +4,4 @@ tqdm
 fastremap
 nibabel
 opencv-python
+pandas
