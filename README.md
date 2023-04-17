@@ -7,7 +7,7 @@ python3 -m venv universal
 source /data/zzhou82/environments/universal/bin/activate
 
 cd /data/zzhou82/project
-git clone https://github.com/MrGiovanni/LargePseudoDataset.git
+git clone https://github.com/MrGiovanni/AbdomenAtlas
 cd LargePseudoDataset
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
 pip install 'monai[all]'
