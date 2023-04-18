@@ -1,7 +1,6 @@
 import os
 import argparse
 
-
 def check_segmentations(args,dataset,existing_patient):
     segmentations = os.path.join(args.data_root_path,dataset,existing_patient,'segmentations')
     organ_list = os.listdir(segmentations)
@@ -12,9 +11,7 @@ def check_segmentations(args,dataset,existing_patient):
     return False
 
 def check_list(args):
-    datasets_path = args.data_root_path
-    check_datalist = args.datalist
-    true_dataset = args.data_txt_path + check_datalist + "_test.txt"
+    true_dataset = args.data_txt_path + args.datalist + ".txt"
     organs = args.organs
     existing_id = []
     missing_id = []
@@ -22,7 +19,7 @@ def check_list(args):
     with open(true_dataset, "r") as file:
         for lines in file:
             line = lines.strip().split('\t')[0].split('/')
-            dataset = datasets_path + line[0]
+            dataset = args.data_root_path + line[0]
             true_id.append(line[-1][:-7])
             missing_id.append(line[-1][:-7])
 
@@ -56,10 +53,10 @@ def main():
     else:
         print("There is no missing cases")
 
-    with open(args.out+args.datalist+'_existing_id', "w") as file:
+    with open(args.out+args.datalist+'_existing_id.txt', "w") as file:
         for item in existing_id:
             file.write("%s\n" % item)
-    with open(args.out+args.datalist+'_missing_id', "w") as file:
+    with open(args.out+args.datalist+'_missing_id.txt', "w") as file:
         for item in missing_id:
             file.write("%s\n" % item)
 
