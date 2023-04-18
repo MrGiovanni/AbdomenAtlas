@@ -38,6 +38,19 @@ wget https://www.dropbox.com/s/6vp6o8tydb8waby/13_AbdomenCT-12organ.tar.gz # 13 
 wget https://www.dropbox.com/s/ipkeaelyethy3sn/Totalsegmentator_dataset.zip # Totalsegmentor
 ```
 
+#### Download datasets with pseudo labels
+
+```bash
+wget https://www.dropbox.com/s/pv4srl2bb5bd2s9/01_Multi-Atlas_Labeling.tar.gz
+wget https://www.dropbox.com/s/fjqm3fckcsybsn2/02_TCIA_Pancreas-CT.tar.gz
+wget https://www.dropbox.com/s/d83y6nc1z89wv4p/03_CHAOS.tar.gz
+wget https://www.dropbox.com/s/ifwqd4maerglbw6/04_LiTS.tar.gz
+wget https://www.dropbox.com/s/f8gely0atguz0xn/07_WORD.tar.gz
+wget https://www.dropbox.com/s/qka3i3gnmlw3g8l/09_AMOS.tar.gz
+wget https://www.dropbox.com/s/xr1x4o4fei1xadv/12_CT-ORG.tar.gz
+wget https://www.dropbox.com/s/87lumxv1440mu4e/13_AbdomenCT-12organ.tar.gz
+```
+
 #### 1. Generate dataset list
 ```bash
 python -W ignore generate_datalist.py --data_path /medical_backup/PublicAbdominalData --dataset_name 18_FLARE23 --folder imagesTr2200 labelsTr2200 --out ./dataset/dataset_list --save_file PAOT_18_wt_label.txt
