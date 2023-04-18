@@ -1,6 +1,4 @@
-```
-python -W ignore check_completeness.py --datalist PAOT --data_root_path /medical_backup/LargePseudoDataset/ --data_txt_path dataset/dataset_list/ --out checklist
-```
+# python -W ignore check_completeness.py --datalist PAOT --data_root_path /medical_backup/LargePseudoDataset/ --data_txt_path dataset/dataset_list/ --out checklist
 
 import os
 import argparse
