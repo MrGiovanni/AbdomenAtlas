@@ -45,8 +45,11 @@ def main():
     parser.add_argument('--out', default='./checklist/')
 
     args = parser.parse_args()
+    
+    if not os.path.isdir(args.out):
+        os.makedirs(args.out)
 
-    existing_id,missing_id = check_list(args)
+    existing_id, missing_id = check_list(args)
 
     if missing_id :
         print("Some cases are missing, please cheack the missing list")
