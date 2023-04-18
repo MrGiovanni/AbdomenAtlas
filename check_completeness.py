@@ -1,3 +1,7 @@
+```
+python -W ignore check_completeness.py --datalist PAOT --data_root_path /medical_backup/LargePseudoDataset/ --data_txt_path dataset/dataset_list/ --out checklist
+```
+
 import os
 import argparse
 
@@ -11,7 +15,7 @@ def check_segmentations(args,dataset,existing_patient):
     return False
 
 def check_list(args):
-    true_dataset = args.data_txt_path + args.datalist + ".txt"
+    true_dataset = os.path.join(args.data_txt_path, args.datalist + ".txt")
     organs = args.organs
     existing_id = []
     missing_id = []
@@ -56,10 +60,10 @@ def main():
     else:
         print("There is no missing cases")
 
-    with open(args.out+args.datalist+'_existing_id.txt', "w") as file:
+    with open(os.path.join(args.out, args.datalist+'_existing_id.txt'), "w") as file:
         for item in existing_id:
             file.write("%s\n" % item)
-    with open(args.out+args.datalist+'_missing_id.txt', "w") as file:
+    with open(os.path.join(args.out, args.datalist+'_missing_id.txt'), "w") as file:
         for item in missing_id:
             file.write("%s\n" % item)
 
