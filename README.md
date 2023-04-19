@@ -45,8 +45,11 @@ wget https://www.dropbox.com/s/pv4srl2bb5bd2s9/01_Multi-Atlas_Labeling.tar.gz
 wget https://www.dropbox.com/s/fjqm3fckcsybsn2/02_TCIA_Pancreas-CT.tar.gz
 wget https://www.dropbox.com/s/d83y6nc1z89wv4p/03_CHAOS.tar.gz
 wget https://www.dropbox.com/s/ifwqd4maerglbw6/04_LiTS.tar.gz
+wget https://www.dropbox.com/s/mdtfa1ldf7xkngy/05_KiTS.tar.gz
 wget https://www.dropbox.com/s/f8gely0atguz0xn/07_WORD.tar.gz
+wget https://www.dropbox.com/s/u5ne232eoew3s9v/08_AbdomenCT-1K.tar.gz
 wget https://www.dropbox.com/s/qka3i3gnmlw3g8l/09_AMOS.tar.gz
+wget https://www.dropbox.com/s/fkjj2zs8w4dy6m9/10_Decathlon.tar.gz
 wget https://www.dropbox.com/s/xr1x4o4fei1xadv/12_CT-ORG.tar.gz
 wget https://www.dropbox.com/s/87lumxv1440mu4e/13_AbdomenCT-12organ.tar.gz
 ```
