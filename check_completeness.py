@@ -4,7 +4,7 @@ import os
 import argparse
 
 def check_segmentations(args,dataset,existing_patient):
-    segmentations = os.path.join(args.data_root_path,dataset,existing_patient,'segmentations')
+    segmentations = os.path.join(args.data_root_path,dataset,existing_patient,'backbones',args.backbone,'segmentations')
     organ_list = os.listdir(segmentations)
     for i in range(len(organ_list)):
         organ_list[i] = organ_list[i][:-7]
@@ -39,6 +39,7 @@ def main():
     parser.add_argument('--data_root_path', default='/medical_backup/LargePseudoDataset/', help='data root path')
     parser.add_argument('--data_txt_path', default='./dataset/dataset_list/', help='data txt path')
     parser.add_argument('--datalist', default='PAOT_01')
+    parser.add_argument('--backbone', default='swinunetr')
     parser.add_argument('--organs',nargs='+',default = ['adrenal_gland_left','adrenal_gland_right','aorta','bladder','celiac_truck',
     'colon','colon_tumor','duodenum','esophagus','femur_left','femur_right','gall_bladder','hepatic_vessel',
     'hepatic_vessel_tumor','intestine','kidney_cyst','kidney_left','kidney_right','kidney_tumor','liver','liver_tumor','lung_left',
