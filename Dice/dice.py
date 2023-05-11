@@ -23,6 +23,7 @@ def main():
     organs_set = {'liver':1,'kidney_right':2,'spleen':3,'pancreas':4,'aorta':5,'postcava':6,'adrenal_gland_right':7,
                     'adrenal_gland_left':8,'gall_bladder':9,'esophagus':10,'stomach':11,'duodenum':12,'kidney_left':13}
     dice_dic = {}
+    id = []
     for organ in args.organs:
         if organ not in dice_dic:
             dice_dic[organ] = []
@@ -60,6 +61,9 @@ def main():
         for key, value in re_dic.items():
             file.write(f'{key}: {value}\n')
         file.close()
+    Dice_df = pd.DataFrame(dice_dic)
+    Dice_df.insert(0,'Case_Id',id)
+    Dice_df.to_csv(os.path.join(args.out,'dice.csv'), index=False)
     
 
 if __name__ == "__main__":
