@@ -1,29 +1,28 @@
-# AbdonmenAtlas
+# AbdonmenAtlas-8K
 
 #### Setup
-```
+```bash
 cd /data/zzhou82/environments
 python3 -m venv universal
 source /data/zzhou82/environments/universal/bin/activate
 
-cd /data/zzhou82/project
 git clone https://github.com/MrGiovanni/AbdomenAtlas
-cd LargePseudoDataset
+cd AbdomenAtlas/pretrained_checkpoints
+wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
+wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
+cd ..
+
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
 pip install 'monai[all]'
 pip install --upgrade monai==0.9.0
 pip install -r requirements.txt
-cd pretrained_checkpoints
-wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
-wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
-cd ..
 ```
 
 #### Download public datasets
 
 ```tar -xzvf name.tar.gz```
 
-```
+```bash
 wget https://www.dropbox.com/s/jnv74utwh99ikus/01_Multi-Atlas_Labeling.tar.gz # 01 Multi-Atlas_Labeling.tar.gz (1.53 GB)
 wget https://www.dropbox.com/s/5yzdzb7el9r3o9i/02_TCIA_Pancreas-CT.tar.gz # 02 TCIA_Pancreas-CT.tar.gz (7.51 GB)
 wget https://www.dropbox.com/s/lzrhirei2t2vuwg/03_CHAOS.tar.gz # 03 CHAOS.tar.gz (925.3 MB)
