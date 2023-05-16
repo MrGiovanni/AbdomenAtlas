@@ -1,4 +1,4 @@
-# Calculate the volume for eight organs
+# Calculate the volume for eight organs based on pseudo labels
 import numpy as np
 import nibabel as nib
 import os

@@ -1,166 +1,91 @@
 # AbdonmenAtlas-8K
-## Introduction
-We propose a systematic and efficient method to enable rapid annotation of organs in numerous CT scans. We produce per-voxel annotation for eight organs in 8,448 volumetric CT scans within three weeks, in which 3,410 scans will be made publicly available to promote ongoing improvements in segmentation performance. The large-scale, multi-organ segmentation datasets are also impactful for many downstream clinical tasks, such as surgery, treatment, abdomen atlas, and anomaly detection.
-## Method
-1. Inconsistency. To quantify consistency, we calculate the standard deviation of the soft predictions produced by multiple architectures including Swin UNETR, nnU-Net, and U-Net. Regions with high standard deviation are indicative of higher inconsistency and may require further revision.
-2. Uncertainty. To quantify the confidence level associated with the segmentation of eight target organs, we compute the entropy of each organ’s soft predictions. Higher entropy values in a region imply lower confidence and greater uncertainty, which may increase the likelihood of prediction errors within that region that require further refinement.
-3. Overlap. We assess the overlap between abdominal organs to detect prediction errors. This involves the intersection between the pseudo labels of the eight organs and surrounding anatomical structures, generating overlap masks that pinpoint areas where organs overlap with their surroundings. Such overlap in unexpected regions indicates prediction errors.
 
-Attention map is generated to help annotators quickly locate regions of the target organs that require revision or confirmation. We take the union of the inconsistency regions, the uncertainty regions, and the overlap regions.
+We have created a large multi-organ dataset (called AbdomenAtlas-8K) with the spleen, liver, kidneys, stomach, gallbladder, pancreas, aorta, and IVC annotated in **8,448** CT volumes, equating to **3.2 million** CT slices. The conventional annotation methods would take an experienced annotator up to **1,600 weeks** (or roughly **30.8 years**) to complete this task. In contrast, our annotation method has accomplished this task in **three weeks** (based on an 8-hour workday, five days a week) while maintaining a similar or even better annotation quality.
 
+## Paper @Tiezheng
 
-TODO: Ask for an account in sol asurc/ form rtshelp@asu.edu
-#### Setup
+<b>Label-Free Liver Tumor Segmentation</b> <br/>
+[Qixin Hu](https://scholar.google.com/citations?user=EqD5GP8AAAAJ&hl=en)<sup>1</sup>, [Yixiong Chen](https://scholar.google.com/citations?hl=en&user=bVHYVXQAAAAJ)<sup>2</sup>, [Junfei Xiao](https://lambert-x.github.io/)<sup>3</sup>, Shuwen Sun<sup>4</sup>, [Jieneng Chen](https://scholar.google.com/citations?hl=en&user=yLYj88sAAAAJ)<sup>3</sup>, [Alan L. Yuille](https://www.cs.jhu.edu/~ayuille/)<sup>3</sup>, and [Zongwei Zhou](https://www.zongweiz.com/)<sup>3,*</sup> <br/>
+<sup>1 </sup>Huazhong University of Science and Technology,  <br/>
+<sup>2 </sup>The Chinese University of Hong Kong -- Shenzhen,  <br/>
+<sup>3 </sup>Johns Hopkins University,   <br/>
+<sup>4 </sup>The First Affiliated Hospital of Nanjing Medical University <br/>
+arXiv <br/>
+[paper](https://arxiv.org/pdf/2303.14869.pdf) | [code](https://github.com/MrGiovanni/SyntheticTumors) | dataset
+
+## 0. Installation
+
+To create environment, see [installation instructions](INSTALL.md).
 ```bash
 git clone https://github.com/MrGiovanni/AbdomenAtlas
 cd AbdomenAtlas/pretrained_checkpoints
-wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
 wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
+wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
 cd ..
-```
-
-#### Install
-```bash
-module load anaconda3/5.3.0
-conda create -n atlas python=3.9
+datapath=/medical_backup/PublicAbdominalData
+savepath=/medical_backup/Users/zzhou82/outs
 source activate atlas
-pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
-pip install monai[all]==0.9.0
-pip install -r requirements.txt
 ```
 
-#### Download public datasets
 
-```tar -xzvf name.tar.gz```
+## 1. Download public datasets (BTCV as an example)
 
 ```bash
 wget https://www.dropbox.com/s/jnv74utwh99ikus/01_Multi-Atlas_Labeling.tar.gz # 01 Multi-Atlas_Labeling.tar.gz (1.53 GB)
-wget https://www.dropbox.com/s/5yzdzb7el9r3o9i/02_TCIA_Pancreas-CT.tar.gz # 02 TCIA_Pancreas-CT.tar.gz (7.51 GB)
-wget https://www.dropbox.com/s/lzrhirei2t2vuwg/03_CHAOS.tar.gz # 03 CHAOS.tar.gz (925.3 MB)
-wget https://www.dropbox.com/s/2i19kuw7qewzo6q/04_LiTS.tar.gz # 04 LiTS.tar.gz (17.42 GB)
-wget https://www.dropbox.com/s/l2bvis2pjlcyas7/05_KiTS.tar.gz # 05 KiTS.tar.gz (28.04 GB)
-wget https://www.dropbox.com/s/toavg919niykblq/07_WORD.tar.gz # 07 WORD.tar.gz (5.31 GB)
-wget https://www.dropbox.com/s/70e3df92w3imggh/08_AbdomenCT-1K.tar.gz # 08 AbdomenCT-1K.tar.gz (82.54 GB)
-wget https://www.dropbox.com/s/7ro2nsmhf1cq2xn/09_AMOS.tar.gz # 09 AMOS.tar.gz (8.81 GB)
-wget https://www.dropbox.com/s/e7yq57esg3sci3m/10_Decathlon.tar.gz # 10 Decathlon.tar.gz (75.31 GB)
-wget https://www.dropbox.com/s/x6slst6kt9pdg2t/12_CT-ORG.tar.gz # 12 CT-ORG.tar.gz (18.03 GB)
-wget https://www.dropbox.com/s/6vp6o8tydb8waby/13_AbdomenCT-12organ.tar.gz # 13 AbdomenCT-12organ.tar.gz (1.48 GB)
-wget https://www.dropbox.com/s/ipkeaelyethy3sn/Totalsegmentator_dataset.zip # Totalsegmentor
+tar -xzvf 01_Multi-Atlas_Labeling.tar.gz
 ```
 
-#### Download datasets with pseudo labels
+## 2. Generate a dataset list
 
 ```bash
-wget https://www.dropbox.com/s/pv4srl2bb5bd2s9/01_Multi-Atlas_Labeling.tar.gz
-wget https://www.dropbox.com/s/fjqm3fckcsybsn2/02_TCIA_Pancreas-CT.tar.gz
-wget https://www.dropbox.com/s/d83y6nc1z89wv4p/03_CHAOS.tar.gz
-wget https://www.dropbox.com/s/ifwqd4maerglbw6/04_LiTS.tar.gz
-wget https://www.dropbox.com/s/mdtfa1ldf7xkngy/05_KiTS.tar.gz
-wget https://www.dropbox.com/s/f8gely0atguz0xn/07_WORD.tar.gz
-wget https://www.dropbox.com/s/u5ne232eoew3s9v/08_AbdomenCT-1K.tar.gz
-wget https://www.dropbox.com/s/qka3i3gnmlw3g8l/09_AMOS.tar.gz
-wget https://www.dropbox.com/s/fkjj2zs8w4dy6m9/10_Decathlon.tar.gz
-wget https://www.dropbox.com/s/xr1x4o4fei1xadv/12_CT-ORG.tar.gz
-wget https://www.dropbox.com/s/87lumxv1440mu4e/13_AbdomenCT-12organ.tar.gz
+# if the annotation is available
+python -W ignore generate_datalist.py --data_path $datapath --dataset_name 01_Multi-Atlas_Labeling --folder img label --out ./dataset/dataset_list --save_file PAOT_01_wt_label.txt
+
+# if the annotation is not available
+python -W ignore generate_datalist.py --data_path $datapath --dataset_name 01_Multi-Atlas_Labeling --folder img --out ./dataset/dataset_list --save_file PAOT_01_wo_label.txt
 ```
-## Procedures
-#### 1. Generate dataset list
+
+#### 3. Make AI predictions
+
+###### U-Net
 ```bash
-python -W ignore generate_datalist.py --data_path /medical_backup/PublicAbdominalData --dataset_name 18_FLARE23 --folder imagesTr2200 labelsTr2200 --out ./dataset/dataset_list --save_file PAOT_18_wt_label.txt
+# if the annotation is available
+CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir $savepath --dataset_list PAOT_01_wt_label --data_root_path $datapath --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_01_wt_label_unet.txt
 
-python -W ignore generate_datalist.py --data_path /medical_backup/PublicAbdominalData --dataset_name 18_FLARE23 --folder unlabeledTr1800 --out ./dataset/dataset_list --save_file PAOT_18_wo_label.txt
+# if the annotation is not available
+CUDA_VISIBLE_DEVICES=1 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir $savepath --dataset_list PAOT_01_wo_label --data_root_path $datapath  --store_entropy --store_soft_pred --store_result >> logs/PAOT_01_wo_label_unet.txt
 ```
 
-#### 2. Make AI predictions
+###### Swin UNETR
 ```bash
-source activate atlas
-cd /data/zzhou82/project/AbdomenAtlas/
-CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wt_label --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wt_label_unet.txt
-CUDA_VISIBLE_DEVICES=1 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wo_label --data_root_path /medical_backup/PublicAbdominalData/  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wo_label_unet.txt
+# if the annotation is available
+CUDA_VISIBLE_DEVICES=2 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir $savepath --dataset_list PAOT_01_wt_label --data_root_path $datapath --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_01_wt_label_swinunetr.txt
 
-CUDA_VISIBLE_DEVICES=2 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wt_label --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wt_label_swinunetr.txt
-CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wo_label --data_root_path /medical_backup/PublicAbdominalData/  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wo_label_swinunetr.txt
+# if the annotation is not available
+CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir $savepath --dataset_list PAOT_01_wo_label --data_root_path $datapath  --store_entropy --store_soft_pred --store_result >> logs/PAOT_01_wo_label_swinunetr.txt
 ```
-#### 3. Post-Processing and Generate Dataset 
+
+
+#### 3. Post-Processing and Generate Dataset @Chongyu ???
 ```bash
 python -W ignore create_dataset.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --save_dir /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet nnunet --create_dataset --cpu >> /home/chongyu/tmp/average_02.txt
 ```
 
-#### 4. Generate Attention Map and Priority List 
+#### 4. Generate Attention Map and Priority List @Chongyu ???
 ```bash
 python -W ignore create_attention.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet nnunet --save_consistency --save_entropy --save_overlap >> /home/chongyu/tmp/priority_02.txt
 ```
 
-
-
-
-
-
-<!-- #### Generate pseudo labels for different datasets
+## Citation @Tiezheng
 
 ```
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=1 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_01 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_01.txt
+@article{hu2023label,
+  title={Label-Free Liver Tumor Segmentation},
+  author={Hu, Qixin and Chen, Yixiong and Xiao, Junfei and Sun, Shuwen and Chen, Jieneng and Yuille, Alan and Zhou, Zongwei},
+  journal={arXiv preprint arXiv:2303.14869},
+  year={2023}
+}
+```
 
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=1 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_02 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_02.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_03 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_03.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=6 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_04 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_04.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=2 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_05 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_05.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=5 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_07 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_07.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_08 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_08.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=1 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_09 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_09.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_10 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_10.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_12 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_12.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_13 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_13.txt
-
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
-CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/epoch_450.pth --log_name /mnt/zzhou82/LargePseudoDataset --dataset_list PAOT_14 --data_root_path /mnt/zzhou82/PublicAbdominalData/ --store_result  >> logs/PAOT_14.txt
-``` -->
-
-<!-- #### Experiment logs
-
-- [x] PAOT_01
-- [x] PAOT_02
-- [x] PAOT_03
-- [x] PAOT_04
-- [x] PAOT_05
-- [x] PAOT_07
-- [x] PAOT_08
-- [x] PAOT_09
-- [x] PAOT_10
-- [x] PAOT_12
-- [x] PAOT_13
-- [ ] PAOT_14 -->
 ## Acknowledgements
 This work was supported by the Lustgarten Foundation for Pancreatic Cancer Research and partially by the Patrick J. McGovern Foundation Award. We appreciate the effort of the MONAI Team to provide open-source code for the community.

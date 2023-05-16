@@ -1,4 +1,4 @@
-# Calculate the dice using orignal label and pseudolabel
+# Calculate the dice using orignal label and pseudo label
 import numpy as np
 import nibabel as nib
 import os
