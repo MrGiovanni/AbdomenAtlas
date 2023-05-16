@@ -148,3 +148,5 @@ CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/
 - [x] PAOT_12
 - [x] PAOT_13
 - [ ] PAOT_14 -->
+## Acknowledgements
+This work was supported by the Lustgarten Foundation for Pancreatic Cancer Research and partially by the Patrick J. McGovern Foundation Award. We appreciate the effort of the MONAI Team to provide open-source code for the community.
