@@ -73,8 +73,8 @@ python -W ignore generate_datalist.py --data_path /medical_backup/PublicAbdomina
 
 #### 2. Make AI predictions
 ```bash
-source /data/zzhou82/environments/universal/bin/activate
-cd /data/zzhou82/project/4Feb2023_LargePseudoDataset/
+source activate atlas
+cd /data/zzhou82/project/AbdomenAtlas/
 CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wt_label --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wt_label_unet.txt
 CUDA_VISIBLE_DEVICES=1 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wo_label --data_root_path /medical_backup/PublicAbdominalData/  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wo_label_unet.txt
 
