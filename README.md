@@ -1,20 +1,24 @@
 # AbdonmenAtlas-8K
 
+TODO: Ask for an account in sol asurc/ form rtshelp@asu.edu
+
+
 #### Setup
 ```bash
-cd /data/zzhou82/environments
-python3 -m venv universal
-source /data/zzhou82/environments/universal/bin/activate
-
 git clone https://github.com/MrGiovanni/AbdomenAtlas
 cd AbdomenAtlas/pretrained_checkpoints
 wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
 wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
 cd ..
+```
 
+#### Install
+```bash
+module load anaconda3/5.3.0
+conda create -n atlas python=3.9
+source activate atlas
 pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
-pip install 'monai[all]'
-pip install --upgrade monai==0.9.0
+pip install monai[all]==0.9.0
 pip install -r requirements.txt
 ```
 
