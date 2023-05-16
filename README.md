@@ -68,12 +68,12 @@ CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/
 
 ## 3. Post-Processing and Generate Dataset @Chongyu ???
 ```bash
-python -W ignore create_dataset.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --save_dir /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet nnunet --create_dataset --cpu >> /home/chongyu/tmp/average_02.txt
+python -W ignore create_dataset.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --save_dir /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet swinunetr --create_dataset --cpu >> /home/chongyu/tmp/average_02.txt
 ```
 
 ## 4. Generate Attention Map and Priority List @Chongyu ???
 ```bash
-python -W ignore create_attention.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet nnunet --save_consistency --save_entropy --save_overlap >> /home/chongyu/tmp/priority_02.txt
+python -W ignore create_attention.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet swinunetr --save_consistency --save_entropy --save_overlap >> /home/chongyu/tmp/priority_02.txt
 ```
 
 ## Citation @Tiezheng
