@@ -81,6 +81,17 @@ CUDA_VISIBLE_DEVICES=1 python -W ignore test.py --resume pretrained_checkpoints/
 CUDA_VISIBLE_DEVICES=2 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wt_label --data_root_path /medical_backup/PublicAbdominalData/ --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wt_label_swinunetr.txt
 CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir /data/zzhou82/project/LargePseudoDataset/outs --dataset_list PAOT_18_wo_label --data_root_path /medical_backup/PublicAbdominalData/  --store_entropy --store_soft_pred --store_result >> logs/PAOT_18_wo_label_swinunetr.txt
 ```
+#### 3. Post-Processing and Generate Dataset 
+```bash
+CUDA_VISIBLE_DEVICES=0 python -W ignore create_dataset.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --save_dir /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet nnunet --create_dataset --cpu >> /home/chongyu/tmp/average_02.txt
+
+python -W ignore create_attention.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet nnunet --save_consistency --save_entropy --save_overlap >> /home/chongyu/tmp/priority_02.txt
+```
+
+
+
+
+
 
 <!-- #### Generate pseudo labels for different datasets
 
