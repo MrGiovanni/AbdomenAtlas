@@ -1,8 +1,15 @@
 # AbdonmenAtlas-8K
+## Introduction
+We propose a systematic and efficient method to enable rapid annotation of organs in numerous CT scans. We produce per-voxel annotation for eight organs in 8,448 volumetric CT scans within three weeks, in which 3,410 scans will be made publicly available to promote ongoing improvements in segmentation performance. The large-scale, multi-organ segmentation datasets are also impactful for many downstream clinical tasks, such as surgery, treatment, abdomen atlas, and anomaly detection.
+## Method
+1. Inconsistency. To quantify consistency, we calculate the standard deviation of the soft predictions produced by multiple architectures including Swin UNETR, nnU-Net, and U-Net. Regions with high standard deviation are indicative of higher inconsistency and may require further revision.
+2. Uncertainty. To quantify the confidence level associated with the segmentation of eight target organs, we compute the entropy of each organ’s soft predictions. Higher entropy values in a region imply lower confidence and greater uncertainty, which may increase the likelihood of prediction errors within that region that require further refinement.
+3. Overlap. We assess the overlap between abdominal organs to detect prediction errors. This involves the intersection between the pseudo labels of the eight organs and surrounding anatomical structures, generating overlap masks that pinpoint areas where organs overlap with their surroundings. Such overlap in unexpected regions indicates prediction errors.
+
+Attention map is generated to help annotators quickly locate regions of the target organs that require revision or confirmation. We take the union of the inconsistency regions, the uncertainty regions, and the overlap regions.
+
 
 TODO: Ask for an account in sol asurc/ form rtshelp@asu.edu
-
-
 #### Setup
 ```bash
 git clone https://github.com/MrGiovanni/AbdomenAtlas
