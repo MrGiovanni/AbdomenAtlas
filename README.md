@@ -63,7 +63,7 @@ wget https://www.dropbox.com/s/fkjj2zs8w4dy6m9/10_Decathlon.tar.gz
 wget https://www.dropbox.com/s/xr1x4o4fei1xadv/12_CT-ORG.tar.gz
 wget https://www.dropbox.com/s/87lumxv1440mu4e/13_AbdomenCT-12organ.tar.gz
 ```
-
+## Procedures
 #### 1. Generate dataset list
 ```bash
 python -W ignore generate_datalist.py --data_path /medical_backup/PublicAbdominalData --dataset_name 18_FLARE23 --folder imagesTr2200 labelsTr2200 --out ./dataset/dataset_list --save_file PAOT_18_wt_label.txt
@@ -83,8 +83,11 @@ CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/
 ```
 #### 3. Post-Processing and Generate Dataset 
 ```bash
-CUDA_VISIBLE_DEVICES=0 python -W ignore create_dataset.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --save_dir /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet nnunet --create_dataset --cpu >> /home/chongyu/tmp/average_02.txt
+python -W ignore create_dataset.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --save_dir /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet nnunet --create_dataset --cpu >> /home/chongyu/tmp/average_02.txt
+```
 
+#### 4. Generate Attention Map and Priority List 
+```bash
 python -W ignore create_attention.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet nnunet --save_consistency --save_entropy --save_overlap >> /home/chongyu/tmp/priority_02.txt
 ```
 
