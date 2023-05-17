@@ -11,7 +11,7 @@ We have created a large multi-organ dataset (called AbdomenAtlas-8K) with the sp
 <sup>1 </sup>Johns Hopkins University,  <br/>
 <sup>2 </sup>Rutgers University,  <br/>
 <sup>3 </sup>City University of Hong Kong,   <br/>
-<sup>4 </sup>The NVIDIA <br/>
+<sup>4 </sup>NVIDIA <br/>
 arXiv preprint arXiv:2305.09666 <br/>
 [paper](https://arxiv.org/pdf/2305.09666.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | dataset
 
