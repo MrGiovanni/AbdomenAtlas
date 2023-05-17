@@ -7,13 +7,13 @@ We have created a large multi-organ dataset (called AbdomenAtlas-8K) with the sp
 ## Paper @Tiezheng
 
 <b>Annotating 8,000 Abdominal CT Volumes for Multi-Organ Segmentation in Three Weeks</b> <br/>
-[Qixin Hu](https://scholar.google.com/citations?user=EqD5GP8AAAAJ&hl=en)<sup>1</sup>, [Yixiong Chen](https://scholar.google.com/citations?hl=en&user=bVHYVXQAAAAJ)<sup>2</sup>, [Junfei Xiao](https://lambert-x.github.io/)<sup>3</sup>, Shuwen Sun<sup>4</sup>, [Jieneng Chen](https://scholar.google.com/citations?hl=en&user=yLYj88sAAAAJ)<sup>3</sup>, [Alan L. Yuille](https://www.cs.jhu.edu/~ayuille/)<sup>3</sup>, and [Zongwei Zhou](https://www.zongweiz.com/)<sup>3,*</sup> <br/>
-<sup>1 </sup>Huazhong University of Science and Technology,  <br/>
-<sup>2 </sup>The Chinese University of Hong Kong -- Shenzhen,  <br/>
-<sup>3 </sup>Johns Hopkins University,   <br/>
-<sup>4 </sup>The First Affiliated Hospital of Nanjing Medical University <br/>
+[Chongyu Qu](https://scholar.google.com/citations?user=EqD5GP8AAAAJ&hl=en)<sup>1</sup>, [Tiezheng Zhang](https://github.com/ollie-ztz)<sup>1</sup>, [Hualin Qiao]<sup>2</sup>, [Jie Liu](https://ljwztc.github.io/)<sup>3</sup>, [Yucheng Tang](https://scholar.google.com/citations?hl=en&user=0xheliUAAAAJ)<sup>4</sup>,[Alan L. Yuille](https://www.cs.jhu.edu/~ayuille/)<sup>1</sup>, and [Zongwei Zhou](https://www.zongweiz.com/)<sup>1,*</sup> <br/>
+<sup>1 </sup>Johns Hopkins University,  <br/>
+<sup>2 </sup>Rutgers University,  <br/>
+<sup>3 </sup>City University of Hong Kong,   <br/>
+<sup>4 </sup>The NVIDIA <br/>
 arXiv <br/>
-[paper](https://arxiv.org/pdf/2305.09666.pdf) | [code](https://github.com/MrGiovanni/SyntheticTumors) | dataset
+[paper](https://arxiv.org/pdf/2305.09666.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | dataset
 
 ## 0. Installation
 
