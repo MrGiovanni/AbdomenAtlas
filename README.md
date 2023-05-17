@@ -40,7 +40,7 @@ After submitting the form, download the trained model and save it into `./pretra
 
 It can be publicly available datasets (e.g., BTCV) or your private datasets. Currently we only take data formatted in nii.gz. This repository will help you assign annotations to these datasets, including 25 organs and 6 types of tumors.
 
-###### 2.1 Download
+##### 2.1 Download
 
 Taking the BTCV dataset as an example, download this dataset and save it to the `datapath` directory.
 ```bash
@@ -49,7 +49,7 @@ wget https://www.dropbox.com/s/jnv74utwh99ikus/01_Multi-Atlas_Labeling.tar.gz # 
 tar -xzvf 01_Multi-Atlas_Labeling.tar.gz
 ```
 
-###### 2.2 Preprocessing
+##### 2.2 Preprocessing
 
 Generate a list for this dataset.
 
@@ -60,12 +60,12 @@ python -W ignore generate_datalist.py --data_path $datapath --dataset_name $data
 
 ## 3. Generate masks
 
-###### U-Net
+##### U-Net
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir $savepath --dataset_list $dataname --data_root_path $datapath --store_result >> logs/$dataname.unet.txt
 ```
 
-###### Swin UNETR (coming soon!)
+##### Swin UNETR (coming soon!)
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir $savepath --dataset_list $dataname --data_root_path $datapath --store_result >> logs/$dataname.swinunetr.txt
 ```
@@ -81,7 +81,7 @@ Figure. Illustration of an attention map.
 
 ## TODO
 
-- [ ] Release trained model checkpoints
+- [ ] Release trained model checkpoints (U-Net and Swin UNETR)
 - [ ] Support more data formats (e.g., dicom)
 - [ ] Release the code for human in the loop
 
