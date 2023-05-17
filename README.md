@@ -6,14 +6,14 @@ We have created a large multi-organ dataset (called AbdomenAtlas-8K) with the sp
 
 ## Paper @Tiezheng
 
-<b>Label-Free Liver Tumor Segmentation</b> <br/>
+<b>Annotating 8,000 Abdominal CT Volumes for Multi-Organ Segmentation in Three Weeks</b> <br/>
 [Qixin Hu](https://scholar.google.com/citations?user=EqD5GP8AAAAJ&hl=en)<sup>1</sup>, [Yixiong Chen](https://scholar.google.com/citations?hl=en&user=bVHYVXQAAAAJ)<sup>2</sup>, [Junfei Xiao](https://lambert-x.github.io/)<sup>3</sup>, Shuwen Sun<sup>4</sup>, [Jieneng Chen](https://scholar.google.com/citations?hl=en&user=yLYj88sAAAAJ)<sup>3</sup>, [Alan L. Yuille](https://www.cs.jhu.edu/~ayuille/)<sup>3</sup>, and [Zongwei Zhou](https://www.zongweiz.com/)<sup>3,*</sup> <br/>
 <sup>1 </sup>Huazhong University of Science and Technology,  <br/>
 <sup>2 </sup>The Chinese University of Hong Kong -- Shenzhen,  <br/>
 <sup>3 </sup>Johns Hopkins University,   <br/>
 <sup>4 </sup>The First Affiliated Hospital of Nanjing Medical University <br/>
 arXiv <br/>
-[paper](https://arxiv.org/pdf/2303.14869.pdf) | [code](https://github.com/MrGiovanni/SyntheticTumors) | dataset
+[paper](https://arxiv.org/pdf/2305.09666.pdf) | [code](https://github.com/MrGiovanni/SyntheticTumors) | dataset
 
 ## 0. Installation
 
