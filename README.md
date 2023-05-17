@@ -81,9 +81,9 @@ Figure. Illustration of an attention map.
 
 ## TODO
 
-[ ] Release trained model checkpoints
-[ ] Support more data formats (e.g., dicom)
-[ ] Release the code for human in the loop
+- [ ] Release trained model checkpoints
+- [ ] Support more data formats (e.g., dicom)
+- [ ] Release the code for human in the loop
 
 ## Citation 
 
