@@ -7,7 +7,7 @@ We have created a large multi-organ dataset (called AbdomenAtlas-8K) with the sp
 ## Paper @Tiezheng
 
 <b>Annotating 8,000 Abdominal CT Volumes for Multi-Organ Segmentation in Three Weeks</b> <br/>
-[Chongyu Qu](https://scholar.google.com/citations?user=EqD5GP8AAAAJ&hl=en)<sup>1</sup>, [Tiezheng Zhang](https://github.com/ollie-ztz)<sup>1</sup>, [Hualin Qiao]<sup>2</sup>, [Jie Liu](https://ljwztc.github.io/)<sup>3</sup>, [Yucheng Tang](https://scholar.google.com/citations?hl=en&user=0xheliUAAAAJ)<sup>4</sup>,[Alan L. Yuille](https://www.cs.jhu.edu/~ayuille/)<sup>1</sup>, and [Zongwei Zhou](https://www.zongweiz.com/)<sup>1,*</sup> <br/>
+[Chongyu Qu]<sup>1</sup>, [Tiezheng Zhang](https://github.com/ollie-ztz)<sup>1</sup>, [Hualin Qiao]<sup>2</sup>, [Jie Liu](https://ljwztc.github.io/)<sup>3</sup>, [Yucheng Tang](https://scholar.google.com/citations?hl=en&user=0xheliUAAAAJ)<sup>4</sup>,[Alan L. Yuille](https://www.cs.jhu.edu/~ayuille/)<sup>1</sup>, and [Zongwei Zhou](https://www.zongweiz.com/)<sup>1,*</sup> <br/>
 <sup>1 </sup>Johns Hopkins University,  <br/>
 <sup>2 </sup>Rutgers University,  <br/>
 <sup>3 </sup>City University of Hong Kong,   <br/>
@@ -81,13 +81,13 @@ python -W ignore create_attention.py --dataset_list PAOT_02 PAOT_002 --data_root
 <p align="center"><img width="100%" src="document/fig_attention_map.jpg" /></p>
 Figure. Illustration of an attention map.
 
-## Citation @Tiezheng
+## Citation 
 
 ```
-@article{hu2023label,
-  title={Label-Free Liver Tumor Segmentation},
-  author={Hu, Qixin and Chen, Yixiong and Xiao, Junfei and Sun, Shuwen and Chen, Jieneng and Yuille, Alan and Zhou, Zongwei},
-  journal={arXiv preprint arXiv:2303.14869},
+@article{qu2023label,
+  title={Annotating 8,000 Abdominal CT Volumes for Multi-Organ Segmentation in Three Weeks},
+  author={Qu, Chongyu and Zhang, Tiezheng and Qiao, Hualin and Liu, Jie and Tang, Yucheng and Yuille, Alan and Zhou, Zongwei},
+  journal={arXiv preprint arXiv:2305.09666},
   year={2023}
 }
 ```
