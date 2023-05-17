@@ -13,7 +13,7 @@ def create_attention(args):
     attention_value = []
     sorted_name_id = []
     for item in args.dataset_list:
-        for line in open(os.path.join(args.data_txt_path,item + '_test.txt')):
+        for line in open(os.path.join(args.data_txt_path,item + '.txt')):
             dataset_name = line.strip().split()[0].split('/')[0]
             case_name = line.strip().split()[0].split('.')[0].split('/')[-1]
             name_id.append(case_name)
