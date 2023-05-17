@@ -12,7 +12,7 @@ We have created a large multi-organ dataset (called AbdomenAtlas-8K) with the sp
 <sup>2 </sup>Rutgers University,  <br/>
 <sup>3 </sup>City University of Hong Kong,   <br/>
 <sup>4 </sup>The NVIDIA <br/>
-arXiv <br/>
+arXiv preprint arXiv:2305.09666 <br/>
 [paper](https://arxiv.org/pdf/2305.09666.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | dataset
 
 ## 0. Installation
@@ -24,67 +24,71 @@ cd AbdomenAtlas/pretrained_checkpoints
 wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
 wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
 cd ..
+dataname=BTCV # an example
 datapath=/medical_backup/PublicAbdominalData
 savepath=/medical_backup/Users/zzhou82/outs
 source activate atlas
 ```
 
+## 1. Download AI models (trained U-Net)
 
-## 1. Download public datasets (BTCV as an example)
+The model was trained on a combination of 14 publicly available CT datasets, consisting of 3,410 (see details in [CLIP-Driven Universal Model](https://github.com/ljwztc/CLIP-Driven-Universal-Model)).
+To download the trained AI segmentation models, please request [here]() (coming soon). 
+After submitting the form, download the trained model and save it into `./pretrained_checkpoints/unet.pth`.
 
+## 2. Prepare your datasets
+
+It can be publicly available datasets (e.g., BTCV) or your private datasets. Currently we only take data formatted in nii.gz. This repository will help you assign annotations to these datasets, including 25 organs and 6 types of tumors.
+
+###### 2.1 Download
+
+Taking the BTCV dataset as an example, download this dataset and save it to the `datapath` directory.
 ```bash
+cd $datapath
 wget https://www.dropbox.com/s/jnv74utwh99ikus/01_Multi-Atlas_Labeling.tar.gz # 01 Multi-Atlas_Labeling.tar.gz (1.53 GB)
 tar -xzvf 01_Multi-Atlas_Labeling.tar.gz
 ```
 
-## 2. Generate a dataset list
+###### 2.2 Preprocessing
+
+Generate a list for this dataset.
 
 ```bash
-# if the annotation is available
-python -W ignore generate_datalist.py --data_path $datapath --dataset_name 01_Multi-Atlas_Labeling --folder img label --out ./dataset/dataset_list --save_file PAOT_01_wt_label.txt
-
-# if the annotation is not available
-python -W ignore generate_datalist.py --data_path $datapath --dataset_name 01_Multi-Atlas_Labeling --folder img --out ./dataset/dataset_list --save_file PAOT_01_wo_label.txt
+cd AbdomenAtlas/
+python -W ignore generate_datalist.py --data_path $datapath --dataset_name $dataname --folder img --out ./dataset/dataset_list --save_file $dataname.txt
 ```
 
-## 3. Make AI predictions
+## 3. Generate masks
 
 ###### U-Net
 ```bash
-# if the annotation is available
-CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir $savepath --dataset_list PAOT_01_wt_label --data_root_path $datapath --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_01_wt_label_unet.txt
-
-# if the annotation is not available
-CUDA_VISIBLE_DEVICES=1 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir $savepath --dataset_list PAOT_01_wo_label --data_root_path $datapath  --store_entropy --store_soft_pred --store_result >> logs/PAOT_01_wo_label_unet.txt
+CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/unet.pth --backbone unet --save_dir $savepath --dataset_list $dataname --data_root_path $datapath --store_result >> logs/$dataname.unet.txt
 ```
 
-###### Swin UNETR
+###### Swin UNETR (coming soon!)
 ```bash
-# if the annotation is available
-CUDA_VISIBLE_DEVICES=2 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir $savepath --dataset_list PAOT_01_wt_label --data_root_path $datapath --original_label  --store_entropy --store_soft_pred --store_result >> logs/PAOT_01_wt_label_swinunetr.txt
-
-# if the annotation is not available
-CUDA_VISIBLE_DEVICES=3 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir $savepath --dataset_list PAOT_01_wo_label --data_root_path $datapath  --store_entropy --store_soft_pred --store_result >> logs/PAOT_01_wo_label_swinunetr.txt
+CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir $savepath --dataset_list $dataname --data_root_path $datapath --store_result >> logs/$dataname.swinunetr.txt
 ```
 
+## 4. [Optional] Human-in-the-loop 
 
-## 3. Post-Processing and Generate Dataset @Chongyu ???
-```bash
-python -W ignore create_dataset.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --save_dir /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet swinunetr --create_dataset --cpu >> /home/chongyu/tmp/average_02.txt
-```
+If you want to perform the "human-in-the-loop" process, you will need the following steps to generate the attention map for human annotators.
 
-## 4. Generate Attention Map and Priority List @Chongyu ???
-```bash
-python -W ignore create_attention.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet swinunetr --save_consistency --save_entropy --save_overlap >> /home/chongyu/tmp/priority_02.txt
-```
+(coming soon!)
 
 <p align="center"><img width="100%" src="document/fig_attention_map.jpg" /></p>
 Figure. Illustration of an attention map.
 
+## TODO
+
+[ ] Release trained model checkpoints
+[ ] Support more data formats (e.g., dicom)
+[ ] Release the code for human in the loop
+
 ## Citation 
 
 ```
-@article{qu2023label,
+@article{qu2023annotating,
   title={Annotating 8,000 Abdominal CT Volumes for Multi-Organ Segmentation in Three Weeks},
   author={Qu, Chongyu and Zhang, Tiezheng and Qiao, Hualin and Liu, Jie and Tang, Yucheng and Yuille, Alan and Zhou, Zongwei},
   journal={arXiv preprint arXiv:2305.09666},
