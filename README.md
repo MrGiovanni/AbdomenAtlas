@@ -1,6 +1,10 @@
 # AbdonmenAtlas-8K
 
-We have created a large multi-organ dataset (called AbdomenAtlas-8K) with the spleen, liver, kidneys, stomach, gallbladder, pancreas, aorta, and IVC annotated in **8,448** CT volumes, equating to **3.2 million** CT slices. The conventional annotation methods would take an experienced annotator up to **1,600 weeks** (or roughly **30.8 years**) to complete this task. In contrast, our annotation method has accomplished this task in **three weeks** (based on an 8-hour workday, five days a week) while maintaining a similar or even better annotation quality.
+We are proud to introduce AbdomenAtlas-8K, a substantial multi-organ dataset with the spleen, liver, kidneys, stomach, gallbladder, pancreas, aorta, and IVC annotated in **8,448** CT volumes, totaling **3.2 million** CT slices. 
+
+An endeavor of such magnitude would demand a staggering **1,600 weeks** or roughly **30.8 years** of an experienced annotator's time. 
+
+In contrast, our annotation method has accomplished this task in **three weeks** (premised on an 8-hour workday, five days a week) while maintaining a similar or even better annotation quality.
 
 <p align="center"><img width="100%" src="document/fig_dataset_overview.jpg" /></p>
 
