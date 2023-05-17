@@ -78,6 +78,9 @@ python -W ignore create_dataset.py --dataset_list PAOT_02 PAOT_002 --data_root_p
 python -W ignore create_attention.py --dataset_list PAOT_02 PAOT_002 --data_root_path /ccvl/net/ccvl15/chongyu/LargePseudoDataset --model_list unet swinunetr --save_consistency --save_entropy --save_overlap >> /home/chongyu/tmp/priority_02.txt
 ```
 
+<p align="center"><img width="100%" src="document/fig_dataset_overview.jpg" /></p>
+Figure. Illustration of an attention map.
+
 ## Citation @Tiezheng
 
 ```
