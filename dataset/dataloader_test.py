@@ -31,7 +31,7 @@ import time
 import warnings
 from copy import copy, deepcopy
 import h5py
-
+import os
 
 import numpy as np
 import torch
@@ -335,11 +335,11 @@ def get_loader(args):
         test_name_lbl = []
         test_name_img=[]
         for item in args.dataset_list:
-            for line in open(args.data_txt_path + item + '.txt'):
+            for line in open(os.path.join(args.data_txt_path,item + '.txt')):
                 name_lbl = line.strip().split()[1].split('.')[0]
                 name_img = line.strip().split()[0].split('.')[0]
-                test_img.append(args.data_root_path + line.strip().split()[0])
-                test_lbl.append(args.data_root_path + line.strip().split()[1])
+                test_img.append(os.path.join(args.data_root_path,line.strip().split()[0]))
+                test_lbl.append(os.path.join(args.data_root_path,line.strip().split()[1]))
                 test_name_lbl.append(name_lbl)
                 test_name_img.append(name_img)
         data_dicts_test = [{'image': image, 'label': label, 'name_lbl': name_lbl,'name_img':name_img}
@@ -349,9 +349,9 @@ def get_loader(args):
         test_img = []
         test_name_img=[]
         for item in args.dataset_list:
-            for line in open(args.data_txt_path + item + '.txt'):
+            for line in open(os.path.join(args.data_txt_path,item + '.txt')):
                 name_img = line.strip().split()[0].split('.')[0]
-                test_img.append(args.data_root_path + line.strip().split()[0])
+                test_img.append(os.path.join(args.data_root_path,line.strip().split()[0]))
                 test_name_img.append(name_img)
         data_dicts_test = [{'image': image,'name_img':name_img}
                     for image, name_img in zip(test_img, test_name_img)]
