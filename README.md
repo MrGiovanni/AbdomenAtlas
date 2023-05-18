@@ -29,7 +29,7 @@ wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
 wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
 cd ..
 dataname=BTCV # an example
-datapath=/medical_backup/PublicAbdominalData
+datapath=/medical_backup/PublicAbdominalData/
 savepath=/medical_backup/Users/zzhou82/outs
 source activate atlas
 ```
