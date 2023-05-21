@@ -2,6 +2,8 @@
 
 ```bash
 module load anaconda3/5.3.0 # only for Agave
+module load mamba/latest # only for Sol
+mamba create -n atlas python=3.9
 
 conda create -n atlas python=3.9
 source activate atlas
