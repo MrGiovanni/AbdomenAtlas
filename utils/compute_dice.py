@@ -16,12 +16,11 @@ def main():
     parser.add_argument('--backbone', default='swinunetr', help='backbone [swinunetr or unet]')
     parser.add_argument('--out', default='./Dice')
     parser.add_argument('--save_file', default='dice.txt')
+    parser.add_argument('--ground_truth', default = {'aorta':1,'adrenal_gland_right':2,'adrenal_gland_left':2,'colon':6,'duodenum':7,'gall_bladder':8,'postcava':9,
+                    'kidney_left':10,'kidney_right':11,'liver':12,'pancreas':13,'spleen':18,'stomach':19})
 
     args = parser.parse_args()
-
-    #This organs_set is for 18 only
-    organs_set = {'liver':1,'kidney_right':2,'spleen':3,'pancreas':4,'aorta':5,'postcava':6,'adrenal_gland_right':7,
-                    'adrenal_gland_left':8,'gall_bladder':9,'esophagus':10,'stomach':11,'duodenum':12,'kidney_left':13}
+    organs_set = args.ground_truth
     dice_dic = {}
     id = []
     for organ in args.organs:
