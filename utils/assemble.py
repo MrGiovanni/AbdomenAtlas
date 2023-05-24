@@ -70,14 +70,14 @@ def main_process(args,cases_list):
             os.mkdir(destination_path)
         temp_path = os.path.join(args.data_path,args.dataset_name,cases_list[i],'average','segmentations')
         temp_files_list = os.listdir(temp_path)
-        revised_organ_list = [f[:-15] for f in temp_files_list if f.endswith('_revised.nii.gz') and not f.startswith('.')]
+        revised_organ_list = [f for f in temp_files_list if f.endswith('_revised.nii.gz') and not f.startswith('.')]
         for f in temp_files_list:
-            organ = f[:-7]
+            organ = f[:-7]+'_revised.nii.gz'
             if organ in revised_organ_list:
-                shutil.copy2(os.path.join(temp_path,organ+'.nii.gz'), os.path.join(destination_path,organ+'_'+args.version+'.nii.gz'))
-                shutil.copy2(os.path.join(temp_path,organ+'_revised.nii.gz'), os.path.join(destination_path,organ+'.nii.gz'))
+                shutil.copy2(os.path.join(temp_path,organ[:-15]+'.nii.gz'), os.path.join(destination_path,organ[:-15]+'_'+args.version+'.nii.gz'))
+                shutil.copy2(os.path.join(temp_path,organ), os.path.join(destination_path,organ[:-15]+'.nii.gz'))
             else:
-                shutil.copy2(os.path.join(temp_path,organ+'.nii.gz'), os.path.join(destination_path,organ+'.nii.gz'))
+                shutil.copy2(os.path.join(temp_path,organ[:-15]+'.nii.gz'), os.path.join(destination_path,organ[:-15]+'.nii.gz'))
 
 
 def main():
