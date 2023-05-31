@@ -8,6 +8,7 @@ from tqdm import tqdm
 import csv
 
 def write_attention_size(args):
+    dataset_name_list = [1,2,3]
     organ_target = TEMPLATE['target']
     attention_size = []
     case_name = []
@@ -28,7 +29,8 @@ def write_attention_size(args):
             organ_dataset = TEMPLATE[template_key]
             organ_index = [organ for organ in organ_target if organ not in organ_dataset]
             print('calculate attention map size for %s'%(current_case_name))
-            if int(dataset_name[0:2]) == 1 or 2 or 3:
+
+            if int(dataset_name[0:2]) in dataset_name_list:
                 uncertainty_path = os.path.join(task_folder,current_case_name,'average','uncertainty')
                 overlap_path = os.path.join(task_folder,current_case_name,'average','overlap')
                 for idx in tqdm(range(len(organ_index))):
@@ -37,6 +39,7 @@ def write_attention_size(args):
                     overlap = nib.load(os.path.join(overlap_path,organ_name+'.nii.gz')).get_fdata()
                     attention = uncertainty/255+overlap
                     attention = attention/np.max(attention)
+                    attention[np.isnan(attention)] = 0
                     total_attention_size += np.sum(attention)
             else: 
                 attention_path = os.path.join(task_folder,current_case_name,'average','attention')
@@ -45,10 +48,11 @@ def write_attention_size(args):
                     attention = nib.load(os.path.join(attention_path,organ_name+'.nii.gz')).get_fdata()
                     attention = attention/255
                     attention = attention/np.max(attention)
+                    attention[np.isnan(attention)] = 0
                     total_attention_size += np.sum(attention)
             attention_size.append(total_attention_size)
             z_size.append(attention.shape[2])
-        
+   
     normalize_attention = np.array(attention_size)/np.array(z_size)
     attention_size_sorted_idx = np.argsort(-normalize_attention)
     print('sort case complete')
