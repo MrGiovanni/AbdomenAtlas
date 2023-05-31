@@ -3,25 +3,45 @@ import argparse
 import numpy as np
 import nibabel as nib
 from utils.utils import ORGAN_NAME_OVERLAP,TEMPLATE,ORGAN_NAME_LOW,ORGAN_NAME_OVERLAP
-from utils.utils import entropy_post_process,std_post_process
+from utils.utils import entropy_post_process,std_post_process,get_key
 from tqdm import tqdm
+import shutil
 import csv
 
 def create_attention(args):
-    organ_index = TEMPLATE['target']
+    organ_target = TEMPLATE['target']
     name_id = []
     attention_value = []
     sorted_name_id = []
     for item in args.dataset_list:
-        for line in open(os.path.join(args.data_txt_path,item + '.txt')):
-            dataset_name = line.strip().split()[0].split('/')[0]
-            case_name = line.strip().split()[0].split('.')[0].split('/')[-1]
+        with open(os.path.join(args.data_txt_path,item + '.txt'), "r") as f:
+            all_lines = f.readlines()
+        for line in tqdm(range(len(all_lines))):
+            dataset_name = all_lines[line].strip().split()[0].split('/')[0]
+            if int(dataset_name[0:2]) == 10:
+                template_key = get_key(all_lines[line].strip().split()[0].split('.')[0])
+            else: 
+                template_key = get_key(dataset_name)
+            organ_dataset = TEMPLATE[template_key]
+            organ_index = [organ for organ in organ_target if organ not in organ_dataset]
+            case_name = all_lines[line].strip().split()[0].split('.')[0].split('/')[-1]
             name_id.append(case_name)
             ct_path = os.path.join(args.data_root_path,dataset_name,case_name,'ct.nii.gz')
             case_path = os.path.join(args.data_root_path,dataset_name,case_name)
             avg_path = os.path.join(case_path,'average')
-
-
+            avg_seg_path = os.path.join(avg_path,'segmentations')
+            if not os.path.isdir(avg_seg_path):
+                os.makedirs(avg_seg_path) 
+            if len(args.model_list) == 1:
+                file_copy_from_path = os.path.join(case_path,'backbones',args.model_list[0])
+                pseudo_label_copy_from = os.path.join(file_copy_from_path,'pseudo_label.nii.gz')
+                shutil.copy(pseudo_label_copy_from,os.path.join(avg_path,'pseudo_label.nii.gz'))
+                organ_copy_from_list = os.listdir(os.path.join(file_copy_from_path,'segmentations'))
+                for organ_copy in organ_copy_from_list:
+                    organ_copy_from_path = os.path.join(file_copy_from_path,'segmentations',organ_copy)
+                    shutil.copy(organ_copy_from_path,os.path.join(avg_seg_path,organ_copy))
+                print('finish file copy for %s'%(case_name))
+            
             ct_load = nib.load(ct_path)
             ct_data = ct_load.get_fdata()
             W,H,D = ct_data.shape
@@ -30,9 +50,11 @@ def create_attention(args):
 
             attention_overall = np.zeros((W,H,D))
 
-            for idx in organ_index:
-                organ_name = ORGAN_NAME_LOW[idx-1]
+            for idx in tqdm(range(len(organ_index))):
+                organ_name = ORGAN_NAME_LOW[organ_index[idx]-1]
                 consistency_map = np.zeros((len(args.model_list),W,H,D))
+                if len(args.model_list) == 1:
+                    consistency_map = np.zeros((W,H,D))
                 entropy_map = np.zeros((W,H,D))
                 overlap_initial = np.zeros((W,H,D))
                 aveg_seg_data = nib.load(os.path.join(avg_path,'segmentations',organ_name+'.nii.gz')).get_fdata()
@@ -41,17 +63,21 @@ def create_attention(args):
                 for model_idx in range(len(args.model_list)):
                     organ_soft_pred_path = os.path.join(case_path,'backbones',args.model_list[model_idx],'soft_pred')
                     organ_entropy_path = os.path.join(case_path,'backbones',args.model_list[model_idx],'entropy')
-                    organ_soft_pred = nib.load(os.path.join(organ_soft_pred_path,organ_name+'.nii.gz')).get_fdata()
+                    if len(args.model_list) != 1:
+                        organ_soft_pred = nib.load(os.path.join(organ_soft_pred_path,organ_name+'.nii.gz')).get_fdata()
+                        consistency_map[model_idx] = organ_soft_pred/255
                     organ_entropy = nib.load(os.path.join(organ_entropy_path,organ_name+'.nii.gz')).get_fdata()
-                    consistency_map[model_idx] = organ_soft_pred/255
                     entropy_map += organ_entropy/255
-                
-                std_raw = np.std(consistency_map,axis=0)
-                std_float,std_binary = std_post_process(std_raw)
+                if len(args.model_list) != 1:
+                    std_raw = np.std(consistency_map,axis=0)
+                    std_float,std_binary = std_post_process(std_raw)
+                else: 
+                    std_float = consistency_map
+                    std_binary = consistency_map
                 entropy_raw = entropy_map/len(args.model_list)
                 entropy_float,entropy_binary = entropy_post_process(entropy_raw)
 
-                if args.save_consistency:
+                if args.save_consistency and len(args.model_list) != 1:
                     consistency_save_path = os.path.join(avg_path,'inconsistency')
                     if not os.path.isdir(consistency_save_path):
                         os.makedirs(consistency_save_path)
@@ -109,44 +135,57 @@ def create_attention(args):
     for i in attention_value_sort:
         sorted_name_id.append(name_id[i])
     print('case sorted complete')
-    return dataset_name,sorted_name_id
+    return sorted_name_id
 
-def priority_list(dataset_name,sorted_name_id,args):
-    csv_save_path = os.path.join(args.data_root_path,dataset_name)
-    for case_name in sorted_name_id:
-        row = [case_name]
-        organ_attention = []
-        organ = []
-        non_zero_attention = []
-        non_zero_organ = []
-        sorted_organ = []
-        attention_path = os.path.join(csv_save_path,case_name,'average','attention')
-        organ_index = TEMPLATE['target']
-        for idx in organ_index:
-            organ_name = ORGAN_NAME_LOW[idx-1]
-            organ_attention_data = nib.load(os.path.join(attention_path,organ_name+'.nii.gz')).get_fdata()
-            organ_attention_value = np.sum(organ_attention_data)
-            organ_attention.append(organ_attention_value)
-            organ.append(organ_name)
-        
-        for att,org in zip(organ_attention,organ):
-            if att != 0:
-                non_zero_attention.append(att)
-                non_zero_organ.append(org)
+def priority_list(sorted_name_id,args):
+    for item in args.dataset_list:
+        with open(os.path.join(args.data_txt_path,item + '.txt'), "r") as f:
+            all_lines = f.readlines()
+        dataset_name = all_lines[0].strip().split()[0].split('/')[0]
+        csv_save_path = os.path.join(args.data_root_path,dataset_name)
+        if os.path.isfile(os.path.join(csv_save_path,args.priority_name+'.csv')):
+            os.remove(os.path.join(csv_save_path,args.priority_name+'.csv'))
+        for case_name in sorted_name_id:
+            row = [case_name]
+            organ_attention = []
+            organ = []
+            non_zero_attention = []
+            non_zero_organ = []
+            sorted_organ = []
+            attention_path = os.path.join(csv_save_path,case_name,'average','attention')
+            organ_target = TEMPLATE['target']
+            if int(dataset_name[0:2]) == 10:
+                template_key = get_key(all_lines[0].strip().split()[0].split('.')[0])
+            else: 
+                template_key = get_key(dataset_name)
+            organ_dataset = TEMPLATE[template_key]
+            organ_index = [i for i in organ_target if i not in organ_dataset]
 
-        non_zero_attention = np.array(non_zero_attention)
-        non_zero_attention_sorted = np.argsort(-non_zero_attention)
-        
-        for attention_idx in non_zero_attention_sorted:
-            sorted_organ.append(non_zero_organ[attention_idx])
+            for idx in organ_index:
+                organ_name = ORGAN_NAME_LOW[idx-1]
+                organ_attention_data = nib.load(os.path.join(attention_path,organ_name+'.nii.gz')).get_fdata()
+                organ_attention_value = np.sum(organ_attention_data)
+                organ_attention.append(organ_attention_value)
+                organ.append(organ_name)
+            
+            for att,org in zip(organ_attention,organ):
+                if att != 0:
+                    non_zero_attention.append(att)
+                    non_zero_organ.append(org)
 
-        for organ_csv in sorted_organ:
-            row.append(organ_csv)
-        print(row)
+            non_zero_attention = np.array(non_zero_attention)
+            non_zero_attention_sorted = np.argsort(-non_zero_attention)
+            
+            for attention_idx in non_zero_attention_sorted:
+                sorted_organ.append(non_zero_organ[attention_idx])
 
-        with open(os.path.join(csv_save_path,'priority.csv'),'a',newline='') as f:
-            writer = csv.writer(f,delimiter=',', quotechar='"')
-            writer.writerow(row)
+            for organ_csv in sorted_organ:
+                row.append(organ_csv)
+            print(row)
+
+            with open(os.path.join(csv_save_path,args.priority_name+'.csv'),'a',newline='') as f:
+                writer = csv.writer(f,delimiter=',', quotechar='"')
+                writer.writerow(row)
 
 
 
@@ -181,10 +220,13 @@ def main():
     parser.add_argument('--save_consistency', action="store_true", default=False, help='whether save consistency')
     parser.add_argument('--save_entropy', action="store_true", default=False, help='whether save binary entropy')
     parser.add_argument('--save_overlap', action="store_true", default=False, help='whether save overlap')
+    parser.add_argument('--priority', action="store_true", default=False, help='whether save priority list')
+    parser.add_argument('--priority_name', default='priority', help='priority csv name')
     args = parser.parse_args()
 
-    dataset_name,sorted_name_id = create_attention(args)
-    priority_list(dataset_name,sorted_name_id,args)
+    sorted_name_id = create_attention(args)
+    if args.priority:
+        priority_list(sorted_name_id,args)
 
 if __name__ == "__main__":
     main()
