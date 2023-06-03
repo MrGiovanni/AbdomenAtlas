@@ -31,7 +31,7 @@ import time
 import warnings
 from copy import copy, deepcopy
 import h5py
-
+import os
 
 import numpy as np
 import torch
@@ -225,7 +225,7 @@ class Compose_Select(Compose):
 def get_loader(args):
     train_transforms = Compose(
         [
-            LoadImageh5d(keys=["image", "label"]), #0
+            LoadImaged(keys=["image","label"]), #0
             AddChanneld(keys=["image", "label"]),
             Orientationd(keys=["image", "label"], axcodes="RAS"),
             Spacingd(
@@ -241,11 +241,11 @@ def get_loader(args):
                 b_max=args.b_max,
                 clip=True,
             ),
-            CropForegroundd(keys=["image", "label", "post_label"], source_key="image"),
-            SpatialPadd(keys=["image", "label", "post_label"], spatial_size=(args.roi_x, args.roi_y, args.roi_z), mode='constant'),
-            RandZoomd_select(keys=["image", "label", "post_label"], prob=0.3, min_zoom=1.3, max_zoom=1.5, mode=['area', 'nearest', 'nearest']), # 7
-            RandCropByPosNegLabeld_select(
-                keys=["image", "label", "post_label"],
+            CropForegroundd(keys=["image", "label"], source_key="image"),
+            SpatialPadd(keys=["image", "label"], spatial_size=(args.roi_x, args.roi_y, args.roi_z), mode='constant'),
+            # RandZoomd_select(keys=["image", "label"], prob=0.3, min_zoom=1.3, max_zoom=1.5, mode=['area', 'nearest']), # 7
+            RandCropByPosNegLabeld(
+                keys=["image", "label"],
                 label_key="label",
                 spatial_size=(args.roi_x, args.roi_y, args.roi_z), #192, 192, 64
                 pos=2,
@@ -254,18 +254,18 @@ def get_loader(args):
                 image_key="image",
                 image_threshold=0,
             ), # 8
-            RandCropByLabelClassesd_select(
-                keys=["image", "label", "post_label"],
-                label_key="label",
-                spatial_size=(args.roi_x, args.roi_y, args.roi_z), #192, 192, 64
-                ratios=[1, 1, 5],
-                num_classes=3,
-                num_samples=args.num_samples,
-                image_key="image",
-                image_threshold=0,
-            ), # 9
+            # RandCropByLabelClassesd_select(
+            #     keys=["image", "label"],
+            #     label_key="label",
+            #     spatial_size=(args.roi_x, args.roi_y, args.roi_z), #192, 192, 64
+            #     ratios=[1, 1, 5],
+            #     num_classes=3,
+            #     num_samples=args.num_samples,
+            #     image_key="image",
+            #     image_threshold=0,
+            # ), # 9
             RandRotate90d(
-                keys=["image", "label", "post_label"],
+                keys=["image", "label"],
                 prob=0.10,
                 max_k=3,
             ),
@@ -274,7 +274,7 @@ def get_loader(args):
                 offsets=0.10,
                 prob=0.20,
             ),
-            ToTensord(keys=["image", "label", "post_label"]),
+            ToTensord(keys=["image", "label"]),
         ]
     )
 
@@ -304,61 +304,31 @@ def get_loader(args):
     )
 
     ## training dict part
-    train_img = []
-    train_lbl = []
-    train_post_lbl = []
-    train_name = []
-
-    for item in args.dataset_list:
-        for line in open(args.data_txt_path + item +'_train.txt'):
-            name = line.strip().split()[1].split('.')[0]
-            if int(name[0:2]) != 8: #and (name[0:2] + '_' + name[17:19]) == '10_03'
-                train_img.append(args.data_root_path + line.strip().split()[0])
-                train_lbl.append(args.data_root_path + line.strip().split()[1])
-                train_post_lbl.append(args.data_root_path + name.replace('label', 'post_label') + '.h5')
-                train_name.append(name)
-    data_dicts_train = [{'image': image, 'label': label, 'post_label': post_label, 'name': name}
-                for image, label, post_label, name in zip(train_img, train_lbl, train_post_lbl, train_name)]
-    print('train len {}'.format(len(data_dicts_train)))
 
 
-    ## validation dict part
-    val_img = []
-    val_lbl = []
-    val_post_lbl = []
-    val_name = []
-    for item in args.dataset_list:
-        for line in open(args.data_txt_path + item +'_val.txt'):
-            name = line.strip().split()[1].split('.')[0]
-            # dataset_index = int(name[0:2])
-            # if int(name[0:2]) == 1: #and (name[0:2] + '_' + name[17:19]) == '10_03'
-            val_img.append(args.data_root_path + line.strip().split()[0])
-            val_lbl.append(args.data_root_path + line.strip().split()[1])
-            val_post_lbl.append(args.data_root_path + name.replace('label', 'post_label') + '.h5')
-            val_name.append(name)
-    data_dicts_val = [{'image': image, 'label': label, 'post_label': post_label, 'name': name}
-                for image, label, post_label, name in zip(val_img, val_lbl, val_post_lbl, val_name)]
-    print('val len {}'.format(len(data_dicts_val)))
+  
 
 
-    ## test dict part
-    test_img = []
-    test_lbl = []
-    test_post_lbl = []
-    test_name = []
-    for item in args.dataset_list:
-        for line in open(args.data_txt_path + item +'.txt'):
-            name = line.strip().split()[1].split('.')[0]
-            if int(name[0:2]) == 1: #and (name[0:2] + '_' + name[17:19]) == '10_03'
-                test_img.append(args.data_root_path + line.strip().split()[0])
-                test_lbl.append(args.data_root_path + line.strip().split()[1])
-                test_post_lbl.append(args.data_root_path + name.replace('label', 'post_label') + '.h5')
-                test_name.append(name)
-    data_dicts_test = [{'image': image, 'label': label, 'post_label': post_label, 'name': name}
-                for image, label, post_label, name in zip(test_img, test_lbl, test_post_lbl, test_name)]
-    print('test len {}'.format(len(data_dicts_test)))
+
+
+
 
     if args.phase == 'train':
+        train_img = []
+        train_lbl = []
+        train_post_lbl = []
+        train_name = []
+
+        for item in args.dataset_list:
+            for line in open(os.path.join(args.data_txt_path,item +'.txt')):
+                name = line.strip().split()[1].split('.')[0]
+                train_img.append(os.path.join(args.data_root_path, line.strip().split()[0]))
+                train_lbl.append(os.path.join(args.data_root_path, line.strip().split()[1]))
+                train_name.append(name)
+        data_dicts_train = [{'image': image, 'label': label,  'name': name}
+                    for image, label, name in zip(train_img, train_lbl, train_name)]
+        print('train len {}'.format(len(data_dicts_train)))
+
         if args.cache_dataset:
             if args.uniform_sample:
                 train_dataset = UniformCacheDataset(data=data_dicts_train, transform=train_transforms, cache_rate=args.cache_rate, datasetkey=args.datasetkey)
@@ -374,8 +344,25 @@ def get_loader(args):
                                     collate_fn=list_data_collate, sampler=train_sampler)
         return train_loader, train_sampler
     
-    
+      ## validation dict part
     if args.phase == 'validation':
+        val_img = []
+        val_lbl = []
+        val_post_lbl = []
+        val_name = []
+        for item in args.dataset_list:
+            for line in open(args.data_txt_path + item +'_val.txt'):
+                name = line.strip().split()[1].split('.')[0]
+                # dataset_index = int(name[0:2])
+                # if int(name[0:2]) == 1: #and (name[0:2] + '_' + name[17:19]) == '10_03'
+                val_img.append(args.data_root_path + line.strip().split()[0])
+                val_lbl.append(args.data_root_path + line.strip().split()[1])
+                val_post_lbl.append(args.data_root_path + name.replace('label', 'post_label') + '.h5')
+                val_name.append(name)
+        data_dicts_val = [{'image': image, 'label': label, 'post_label': post_label, 'name': name}
+                    for image, label, post_label, name in zip(val_img, val_lbl, val_post_lbl, val_name)]
+        print('val len {}'.format(len(data_dicts_val)))
+        
         if args.cache_dataset:
             val_dataset = CacheDataset(data=data_dicts_val, transform=val_transforms, cache_rate=args.cache_rate)
         else:
@@ -383,8 +370,24 @@ def get_loader(args):
         val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False, num_workers=4, collate_fn=list_data_collate)
         return val_loader, val_transforms
     
-    
+        ## test dict part
     if args.phase == 'test':
+        test_img = []
+        test_lbl = []
+        test_post_lbl = []
+        test_name = []
+        for item in args.dataset_list:
+            for line in open(args.data_txt_path + item +'_test.txt'):
+                name = line.strip().split()[1].split('.')[0]
+                if int(name[0:2]) == 1: #and (name[0:2] + '_' + name[17:19]) == '10_03'
+                    test_img.append(args.data_root_path + line.strip().split()[0])
+                    test_lbl.append(args.data_root_path + line.strip().split()[1])
+                    test_post_lbl.append(args.data_root_path + name.replace('label', 'post_label') + '.h5')
+                    test_name.append(name)
+        data_dicts_test = [{'image': image, 'label': label, 'post_label': post_label, 'name': name}
+                    for image, label, post_label, name in zip(test_img, test_lbl, test_post_lbl, test_name)]
+        print('test len {}'.format(len(data_dicts_test)))
+
         if args.cache_dataset:
             test_dataset = CacheDataset(data=data_dicts_test, transform=val_transforms, cache_rate=args.cache_rate)
         else:
@@ -395,5 +398,5 @@ def get_loader(args):
 if __name__ == "__main__":
     train_loader, test_loader = partial_label_dataloader()
     for index, item in enumerate(test_loader):
-        print(item['image'].shape, item['label'].shape, item['task_id'])
+        # print(item['image'].shape, item['label'].shape, item['task_id'])
         input()

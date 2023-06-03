@@ -28,6 +28,9 @@ cd AbdomenAtlas/pretrained_checkpoints
 wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
 wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
 cd ..
+cd pretrained_weights/
+wget https://github.com/Project-MONAI/MONAI-extra-test-data/releases/download/0.8.1/swin_unetr.base_5000ep_f48_lr2e-4_pretrained.pt
+cd ../
 dataname=BTCV # an example
 datapath=/medical_backup/PublicAbdominalData/
 savepath=/medical_backup/Users/zzhou82/outs

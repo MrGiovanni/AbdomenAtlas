@@ -871,9 +871,14 @@ def std_post_process(std_map):
 def get_key(name):
     ## input: name
     ## output: the corresponding key
+    task_dic = {'colon':'10','hepaticvessel':'08','liver':'03','lung':'06','pancreas':'07','spleen':'09'}
     dataset_index = int(name[0:2])
     if dataset_index == 10:
-        template_key = name[0:2] + '_' + name[17:19]
+        if name[17:19].isdigit():
+            template_key = name[0:2] + '_' + name[17:19]
+        else:
+            task_key = name.split('_')[2]
+            template_key = name[0:2] + '_' + task_dic[task_key]
     else:
         template_key = name[0:2]
     return template_key
@@ -959,11 +964,11 @@ def multi_net(net_list, img, task_id):
 def check_data(dataset_check):
     img = dataset_check[0]["image"]
     label = dataset_check[0]["label"]
-    print(dataset_check[0]["name"])
+    # print(dataset_check[0]["name"])
     img_shape = img.shape
     label_shape = label.shape
-    print(f"image shape: {img_shape}, label shape: {label_shape}")
-    print(torch.unique(label[0, :, :, 150]))
+    # print(f"image shape: {img_shape}, label shape: {label_shape}")
+    # print(torch.unique(label[0, :, :, 150]))
     plt.figure("image", (18, 6))
     plt.subplot(1, 2, 1)
     plt.title("image")
