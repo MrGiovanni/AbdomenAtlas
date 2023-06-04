@@ -203,7 +203,7 @@ def main():
     ### for cross_validation 'cross_validation/PAOT_0' 1 2 3 4
     parser.add_argument('--data_root_path', default='/home/jliu288/data/whole_organ/', help='data root path')
     parser.add_argument('--data_txt_path', default='./dataset/dataset_list/', help='data txt path')
-    parser.add_argument('--batch_size', default=2, help='batch size')
+    parser.add_argument('--batch_size', default=2, type=int, help='batch size')
     parser.add_argument('--num_workers', default=8, type=int, help='workers numebr for DataLoader')
     parser.add_argument('--a_min', default=-175, type=float, help='a_min in ScaleIntensityRanged')
     parser.add_argument('--a_max', default=250, type=float, help='a_max in ScaleIntensityRanged')
