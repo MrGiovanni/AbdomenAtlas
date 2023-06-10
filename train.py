@@ -40,14 +40,13 @@ def train(args, train_loader, model, optimizer, loss_seg_DICE, loss_seg_CE):
         train_loader, desc="Training (X / X Steps) (loss=X.X)", dynamic_ncols=True
     )
     for step, batch in enumerate(epoch_iterator):
-        
         x, lbl, name = batch["image"].to(args.device), batch["label"].float(), batch['name']
         B, C, W, H, D = lbl.shape
         y = torch.zeros(B,NUM_CLASS,W,H,D)
         for b in range(B):
             for src,tgt in enumerate(TEMPLATE['all']):
-                y[b][src][lbl[b][0]==tgt] = tgt
-        y = y.float().to(args.device)
+                y[b][src][lbl[b][0]==tgt] = 1
+        y = y.to(args.device)
         logit_map = model(x)
         term_seg_Dice = loss_seg_DICE.forward(logit_map, y, name, TEMPLATE)
         term_seg_BCE = loss_seg_CE.forward(logit_map, y, name, TEMPLATE)
@@ -203,7 +202,7 @@ def main():
     ### for cross_validation 'cross_validation/PAOT_0' 1 2 3 4
     parser.add_argument('--data_root_path', default='/home/jliu288/data/whole_organ/', help='data root path')
     parser.add_argument('--data_txt_path', default='./dataset/dataset_list/', help='data txt path')
-    parser.add_argument('--batch_size', default=2, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=1, type=int, help='batch size')
     parser.add_argument('--num_workers', default=8, type=int, help='workers numebr for DataLoader')
     parser.add_argument('--a_min', default=-175, type=float, help='a_min in ScaleIntensityRanged')
     parser.add_argument('--a_max', default=250, type=float, help='a_max in ScaleIntensityRanged')
@@ -215,7 +214,7 @@ def main():
     parser.add_argument('--roi_x', default=96, type=int, help='roi size in x direction')
     parser.add_argument('--roi_y', default=96, type=int, help='roi size in y direction')
     parser.add_argument('--roi_z', default=96, type=int, help='roi size in z direction')
-    parser.add_argument('--num_samples', default=1, type=int, help='sample number in each ct')
+    parser.add_argument('--num_samples', default=2, type=int, help='sample number in each ct')
     parser.add_argument('--backbone', default='unet', help='backbone [swinunetr or unet]')
 
     parser.add_argument('--phase', default='train', help='train or validation or test')
