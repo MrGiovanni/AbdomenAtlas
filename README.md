@@ -31,7 +31,7 @@ cd ..
 cd pretrained_weights/
 wget https://www.dropbox.com/s/po2zvqylwr0fuek/swin_unetr.base_5000ep_f48_lr2e-4_pretrained.pt
 cd ../
-dataname=BTCV # an example
+dataname=01_Multi-Atlas_Labeling # an example
 datapath=/medical_backup/PublicAbdominalData/
 savepath=/medical_backup/Users/zzhou82/outs
 source activate atlas
