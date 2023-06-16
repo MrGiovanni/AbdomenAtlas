@@ -26,7 +26,7 @@ class BinaryDiceLoss(nn.Module):
         dice_score = 2*num / den
         dice_loss = 1 - dice_score
 
-        dice_loss_avg = dice_loss[target[:,0]!=-1].sum() / dice_loss[target[:,0]!=-1].shape[0]
+        dice_loss_avg = dice_loss.sum() / dice_loss.shape[0]
 
         return dice_loss_avg
 
@@ -46,24 +46,17 @@ class DiceLoss(nn.Module):
 
         total_loss = []
         B = predict.shape[0]
-        # task_dic = {'colon':'10','hepaticvessel':'08','liver':'03','lung':'06','pancreas':'07','spleen':'09'}
+
         for b in range(B):
-            # dataset_index = int(name[b][0:2])
-            # if dataset_index == 10:
-            #     if name[17:19].isdigit():
-            #         template_key = name[0:2] + '_' + name[17:19]
-            #     else:
-            #         task_key = name.split('_')[2]
-            #         template_key = name[0:2] + '_' + task_dic[task_key]
-            # elif dataset_index == 1:
-            #     if int(name[b][-2:]) >= 60:
-            #         template_key = '01_2'
-            #     else:
-            #         template_key = '01'
-            # else:
-            #     template_key = name[b][0:2]
+            target_sum = torch.sum(target[b],axis = (1,2,3))
+            assert target_sum == 32, 'target sum =! 32'
+            non_zero_list = torch.nonzero(target_sum).squeeze().tolist()
             organ_list = TEMPLATE['all']
-            for organ in organ_list:
+            new_list = []
+            for idx in non_zero_list:
+                if idx+1 in organ_list:
+                    new_list.append(idx+1)
+            for organ in new_list:
                 dice_loss = self.dice(predict[b, organ-1], target[b, organ-1])
                 total_loss.append(dice_loss)
             
@@ -88,18 +81,16 @@ class Multi_BCELoss(nn.Module):
         B = predict.shape[0]
 
         for b in range(B):
-            # dataset_index = int(name[b][0:2])
-            # if dataset_index == 10:
-            #     template_key = name[b][0:2] + '_' + name[b][17:19]
-            # elif dataset_index == 1:
-            #     if int(name[b][-2:]) >= 60:
-            #         template_key = '01_2'
-            #     else:
-            #         template_key = '01'
-            # else:
-            #     template_key = name[b][0:2]
+            target_sum = torch.sum(target[b],axis = (1,2,3))
+            assert target_sum == 32, 'target sum =! 32'
+            non_zero_list = torch.nonzero(target_sum).squeeze().tolist()
             organ_list = TEMPLATE['all']
-            for organ in organ_list:
+            new_list = []
+            for idx in non_zero_list:
+                if idx+1 in organ_list:
+                    new_list.append(idx+1)
+
+            for organ in new_list:
                 ce_loss = self.criterion(predict[b, organ-1], target[b, organ-1])
                 total_loss.append(ce_loss)
         total_loss = torch.stack(total_loss)
