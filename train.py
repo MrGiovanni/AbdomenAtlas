@@ -20,7 +20,8 @@ from monai.data import load_decathlon_datalist, decollate_batch, DistributedSamp
 from monai.transforms import AsDiscrete
 from monai.metrics import DiceMetric
 
-from model.SwinUNETR_partial import SwinUNETR
+from model.Universal_model import Universal_model
+# from model.SwinUNETR_partial import SwinUNETR
 from dataset.dataloader import get_loader
 from utils import loss
 from utils.utils import dice_score, check_data, TEMPLATE, get_key, NUM_CLASS,PSEUDO_LABEL_ALL
@@ -77,25 +78,36 @@ def process(args):
     torch.cuda.set_device(args.device)
 
     # prepare the 3D model
-    model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
+    # model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
+    #                 in_channels=1,
+    #                 out_channels=NUM_CLASS,
+    #                 feature_size=48,
+    #                 drop_rate=0.0,
+    #                 attn_drop_rate=0.0,
+    #                 dropout_path_rate=0.0,
+    #                 use_checkpoint=False,
+    #                 encoding=args.trans_encoding
+    #                 )
+
+    model = Universal_model(img_size=(args.roi_x, args.roi_y, args.roi_z),
                     in_channels=1,
                     out_channels=NUM_CLASS,
-                    feature_size=48,
-                    drop_rate=0.0,
-                    attn_drop_rate=0.0,
-                    dropout_path_rate=0.0,
-                    use_checkpoint=False,
+                    backbone=args.backbone,
                     encoding=args.trans_encoding
                     )
 
     #Load pre-trained weights
-    store_dict = model.state_dict()
-    model_dict = torch.load(args.pretrain)["state_dict"]
-    for key in model_dict.keys():
-        if 'out' not in key:
-            store_dict[key] = model_dict[key]
+    model.load_params(torch.load(args.pretrain)["state_dict"])
 
-    model.load_state_dict(store_dict)
+
+    #Load pre-trained weights
+    # store_dict = model.state_dict()
+    # model_dict = torch.load(args.pretrain)["state_dict"]
+    # for key in model_dict.keys():
+    #     if 'out' not in key:
+    #         store_dict[key] = model_dict[key]
+
+    # model.load_state_dict(store_dict)
     print('Use pretrained weights')
 
     if args.trans_encoding == 'word_embedding':
@@ -202,7 +214,7 @@ def main():
     ### for cross_validation 'cross_validation/PAOT_0' 1 2 3 4
     parser.add_argument('--data_root_path', default='/home/jliu288/data/whole_organ/', help='data root path')
     parser.add_argument('--data_txt_path', default='./dataset/dataset_list/', help='data txt path')
-    parser.add_argument('--batch_size', default=1, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=2, type=int, help='batch size')
     parser.add_argument('--num_workers', default=8, type=int, help='workers numebr for DataLoader')
     parser.add_argument('--a_min', default=-175, type=float, help='a_min in ScaleIntensityRanged')
     parser.add_argument('--a_max', default=250, type=float, help='a_max in ScaleIntensityRanged')

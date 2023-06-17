@@ -40,8 +40,6 @@ class DiceLoss(nn.Module):
         self.dice = BinaryDiceLoss(**self.kwargs)
 
     def forward(self, predict, target, name, TEMPLATE):
-        
-        total_loss = []
         predict = F.sigmoid(predict)
 
         total_loss = []
@@ -49,19 +47,22 @@ class DiceLoss(nn.Module):
 
         for b in range(B):
             target_sum = torch.sum(target[b],axis = (1,2,3))
-            assert target_sum == 32, 'target sum =! 32'
-            non_zero_list = torch.nonzero(target_sum).squeeze().tolist()
+            assert len(target_sum) == 32, 'target sum =! 32'
+            non_zero_tensor = torch.nonzero(target_sum).squeeze()
+            non_zero_list = non_zero_tensor.tolist() if non_zero_tensor.dim() > 0 else [non_zero_tensor.tolist()]
             organ_list = TEMPLATE['all']
             new_list = []
             for idx in non_zero_list:
                 if idx+1 in organ_list:
                     new_list.append(idx+1)
-            for organ in new_list:
-                dice_loss = self.dice(predict[b, organ-1], target[b, organ-1])
-                total_loss.append(dice_loss)
-            
+            if len(new_list)!=0:     
+                for organ in new_list:
+                    dice_loss = self.dice(predict[b, organ-1], target[b, organ-1])
+                    total_loss.append(dice_loss)
+        
+        if len(total_loss) == 0:
+            return torch.tensor(1.0).cuda()
         total_loss = torch.stack(total_loss)
-
         return total_loss.sum()/total_loss.shape[0]
 
         
@@ -81,20 +82,11 @@ class Multi_BCELoss(nn.Module):
         B = predict.shape[0]
 
         for b in range(B):
-            target_sum = torch.sum(target[b],axis = (1,2,3))
-            assert target_sum == 32, 'target sum =! 32'
-            non_zero_list = torch.nonzero(target_sum).squeeze().tolist()
             organ_list = TEMPLATE['all']
-            new_list = []
-            for idx in non_zero_list:
-                if idx+1 in organ_list:
-                    new_list.append(idx+1)
 
-            for organ in new_list:
+            for organ in organ_list:
                 ce_loss = self.criterion(predict[b, organ-1], target[b, organ-1])
                 total_loss.append(ce_loss)
         total_loss = torch.stack(total_loss)
-
-        # print(name, total_loss, total_loss.sum()/total_loss.shape[0])
 
         return total_loss.sum()/total_loss.shape[0]
