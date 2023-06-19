@@ -119,6 +119,9 @@ Next, run the following command to obtain the attention maps and priority list f
 ```bash
 python -W ignore create_attention.py --dataset_list $dataname --data_root_path $savepath --model_list swinunetr --priority --priority_name priority 
 ```
+<p align="center"><img width="100%" src="document/fig_attention_map.jpg" /></p>
+Figure. Illustration of an attention map.
+
 ## 5. Data Assembly
 
 In the assembly process, we prioritize the original annotations of the
@@ -141,8 +144,7 @@ This is how our Abdomen-Atlas8K appears
             ├── pancreas.nii.gz
 ```
 
-<p align="center"><img width="100%" src="document/fig_attention_map.jpg" /></p>
-Figure. Illustration of an attention map.
+
 
 ## TODO
 
