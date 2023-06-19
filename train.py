@@ -237,6 +237,7 @@ def main():
                                             help='the content for ')
     parser.add_argument('--cache_dataset', action="store_true", default=False, help='whether use cache dataset')
     parser.add_argument('--cache_rate', default=0.005, type=float, help='The percentage of cached data in total')
+    parser.add_argument('--internal_organ', default=True , type=bool, help='Ourdata or internal organ')
 
     args = parser.parse_args()
     

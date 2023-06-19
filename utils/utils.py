@@ -1032,5 +1032,34 @@ def find_components(mask):
     return label_out , candidates
 
 
+containing_totemplate = {
+    6: [15,27,29],
+    2:[26,32],
+    3:[26,32],
+    11:[28],
+    16:[30],
+    17:[30],
+    19:[31],
+}
+
+def merge_organ(args,lbl,containing_totemplate):
+    new_lbl = torch.zeros_like(lbl)
+    B, C, W, H, D = lbl.shape
+    if args.internal_organ:
+        for b in range(B):
+            for large_organ_index,contained_organ in containing_totemplate.items():
+                mask = torch.zeros_like(lbl[b][0]).type(torch.bool)
+                for t in contained_organ:
+                    temp = lbl[b][t-1].type(torch.bool)
+                    mask = (mask) | (temp)
+                mask = (mask) | (lbl[b][large_organ_index-1].type(torch.bool))
+                new_lbl[b][large_organ_index-1][mask] = 1
+    # else:
+        # The label is not from our dataset
+
+
+    return new_lbl
+
+
 if __name__ == "__main__":
     threshold_organ(torch.zeros(1,12,1))    
