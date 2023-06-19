@@ -79,6 +79,7 @@ CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/
 To generate attention maps for active learning process [optional], remember to save entropy and soft predictions by using the options `--store_entropy` and `--save_soft_pred`
 
 At this stage, the datasets appear as follow:
+```
     $savepath/
     ├── $dataname
         ├── img0001
@@ -93,7 +94,7 @@ At this stage, the datasets appear as follow:
                     └── segmentations
                         ├── spleen.nii.gz
                         ├── liver.nii.gz
-        
+```
 ## 4. [Optional] Active Learning
 
 If you want to perform the active learning process, you will need the following steps to generate the attention map for human annotators.
@@ -125,8 +126,8 @@ eight target organs from each partially-labeled public abdominal dataset as the 
 ```bash
 ```
 
-\`\`\`
 This is how our Abdomen-Atlas8K appears
+```
     $savepath/
     ├── $dataname_img0001
     ├── $dataname_img0002
@@ -138,7 +139,7 @@ This is how our Abdomen-Atlas8K appears
             ├── spleen.nii.gz
             ├── liver.nii.gz
             ├── pancreas.nii.gz
-\`\`\`
+```
 
 <p align="center"><img width="100%" src="document/fig_attention_map.jpg" /></p>
 Figure. Illustration of an attention map.
