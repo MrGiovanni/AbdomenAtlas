@@ -16,7 +16,6 @@ from monai.data import load_decathlon_datalist, decollate_batch
 from monai.transforms import AsDiscrete
 from monai.metrics import DiceMetric
 from monai.inferers import sliding_window_inference
-from model.SwinUNETR_partial import SwinUNETR
 from model.Universal_model import Universal_model
 from dataset.dataloader_test import get_loader
 from utils import loss
@@ -156,49 +155,6 @@ def validation(model, ValLoader, val_transforms, args):
                 print('organ soft pred saved in path: %s'%(new_name))
                 nib.save(organ_save,new_name)
             
-            
-
-
-
-        right_lung_data_path = os.path.join(organ_seg_save_path,'lung_right.nii.gz')
-        left_lung_data_path = os.path.join(organ_seg_save_path,'lung_left.nii.gz')
-        organ_name=['lung_right','lung_left']
-        ct_data = nib.load(destination_ct).get_fdata()
-        right_lung_data = nib.load(right_lung_data_path).get_fdata()
-        left_lung_data = nib.load(left_lung_data_path).get_fdata()
-        right_lung_data_sum = np.sum(right_lung_data,axis=(0,1))
-        left_lung_data_sum = np.sum(left_lung_data,axis=(0,1))
-        right_lung_size = np.sum(right_lung_data,axis=(0,1,2))
-        left_lung_size = np.sum(left_lung_data,axis=(0,1,2))
-        if right_lung_size != 0 or left_lung_size != 0:
-            if right_lung_size>left_lung_size:
-                non_zero_idx = np.nonzero(right_lung_data_sum)
-                first_non_zero_idx = non_zero_idx[0][0]
-                if total_anomly_slice_number!=0:
-                    for s in range(first_non_zero_idx,right_lung_data.shape[-1]):
-                        if len(np.unique(ct_data[:,:,s]))!= 1 and right_lung_data_sum[s] ==0:
-                            print('start writing csv as slice: '+str(s+1))
-                            with open(os.path.join(save_dir,name_img[0].split('/')[0],args.backbone+'_anomaly.csv'),'a',newline='') as f:
-                                writer = csv.writer(f)
-                                content = name_img[0].split('/')[-1]
-                                writer.writerow([content,organ_name[0],s+1])
-                                writer.writerow([content,organ_name[1],s+1])
-            else: 
-                non_zero_idx = np.nonzero(left_lung_data_sum)
-                first_non_zero_idx = non_zero_idx[0][0]
-                if total_anomly_slice_number!=0:
-                    for s in range(first_non_zero_idx,left_lung_data.shape[-1]):
-                        if len(np.unique(ct_data[:,:,s]))!= 1 and left_lung_data_sum[s] ==0:
-                            print('start writing csv as slice: '+str(s+1))
-                            with open(os.path.join(save_dir,name_img[0].split('/')[0],args.backbone+'_anomaly.csv'),'a',newline='') as f:
-                                writer = csv.writer(f)
-                                content = name_img[0].split('/')[-1]
-                                writer.writerow([content,organ_name[0],s+1])
-                                writer.writerow([content,organ_name[1],s+1])
-
-
-
-            
         torch.cuda.empty_cache()
     
 
@@ -215,7 +171,7 @@ def main():
                         help='distributed training or not')
     parser.add_argument("--local_rank", type=int)
     parser.add_argument("--device")
-    parser.add_argument("--epoch", default=0)
+    parser.add_argument("--epoch", default=0,type = int)
     ## logging
     parser.add_argument('--save_dir', default='Nvidia/old_fold0', help='The dataset save path')
     ## model load
@@ -258,33 +214,22 @@ def main():
     parser.add_argument('--store_entropy', action="store_true", default=False, help='whether save entropy map')
     parser.add_argument('--store_soft_pred', action="store_true", default=False, help='whether save soft prediction')
     parser.add_argument('--cache_rate', default=0.6, type=float, help='The percentage of cached data in total')
-    parser.add_argument('--cpu',action="store_true", default=False, help='whether use cpu')
+    parser.add_argument('--cpu',action="store_true", default=False, help='The entire inference process is performed on the GPU ')
     parser.add_argument('--threshold_organ', default='Pancreas Tumor')
     parser.add_argument('--threshold', default=0.6, type=float)
     parser.add_argument('--backbone', default='unet', help='backbone [swinunetr or unet]')
-    parser.add_argument('--create_dataset',action="store_true", default=False, help='whether create atlas8k')
+    parser.add_argument('--create_dataset',action="store_true", default=False)
 
     args = parser.parse_args()
 
     # prepare the 3D model
-    if args.backbone == 'swinunetr':
-        model = SwinUNETR(img_size=(args.roi_x, args.roi_y, args.roi_z),
+ 
+    model = Universal_model(img_size=(args.roi_x, args.roi_y, args.roi_z),
                     in_channels=1,
                     out_channels=NUM_CLASS,
-                    feature_size=48,
-                    drop_rate=0.0,
-                    attn_drop_rate=0.0,
-                    dropout_path_rate=0.0,
-                    use_checkpoint=False,
+                    backbone=args.backbone,
                     encoding='word_embedding'
                     )
-    else:
-        model = Universal_model(img_size=(args.roi_x, args.roi_y, args.roi_z),
-                        in_channels=1,
-                        out_channels=NUM_CLASS,
-                        backbone=args.backbone,
-                        encoding='word_embedding'
-                        )
     #Load pre-trained weights
     store_dict = model.state_dict()
     checkpoint = torch.load(args.resume)

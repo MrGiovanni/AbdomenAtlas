@@ -122,8 +122,8 @@ def main():
     parser.add_argument('--model_list',nargs='+', default=['swinunetr', 'unet','nnunet'])
     parser.add_argument('--data_txt_path', default='./dataset/dataset_list/', help='PAOT list path')
     parser.add_argument('--data_root_path', default='/ccvl/net/ccvl15/chongyu/LargePseudoDataset', help='data root path')
-    parser.add_argument('--create_dataset',action="store_true", default=False, help='whether create atlas8k')
-    parser.add_argument('--cpu',action="store_true", default=False, help='whether use cpu')
+    parser.add_argument('--create_dataset',action="store_true", default=False, help='Whether generate averaging results from given models')
+    parser.add_argument('--cpu',action="store_true", default=False, help='The entire averaging process is performed on the CPU ')
     parser.add_argument('--save_dir', default='/ccvl/net/ccvl15/chongyu/LargePseudoDataset', help='Atlas8k save path')
     args = parser.parse_args()
 

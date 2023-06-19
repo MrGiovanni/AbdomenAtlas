@@ -76,12 +76,31 @@ CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir $savepath --dataset_list $dataname --data_root_path $datapath --store_result >> logs/$dataname.swinunetr.txt
 ```
+To generate attention maps for active learning process [optional], remember to save entropy and soft predictions by using the options `--store_entropy` and `--save_soft_pred`
+## 4. [Optional] Active Learning
 
-## 4. [Optional] Human-in-the-loop 
+If you want to perform the active learning process, you will need the following steps to generate the attention map for human annotators.
 
-If you want to perform the "human-in-the-loop" process, you will need the following steps to generate the attention map for human annotators.
+##### Single Model
 
-(coming soon!)
+To generate the attention map and priority list with results from just one AI model, simply run the following command. In this scenario, the inconsistency will be 0.
+
+```bash
+python -W ignore create_attention.py --dataset_list $dataname --data_root_path $savepath --model_list swinunetr --priority --priority_name priority 
+```
+
+##### Multi-model
+
+To generate the attention map and priority list using results from multiple AI models, begin by running the following command to obtain the average segmentation results from all the given models.
+
+```bash
+python -W ignore create_dataset.py --dataset_list $dataname  --data_root_path /$savepath --save_dir $savepath --model_list swinunetr unet nnunet --create_dataset --cpu
+```
+Next, run the following command to obtain the attention maps and priority list for the results from multiple models.
+
+```bash
+python -W ignore create_attention.py --dataset_list $dataname --data_root_path $savepath --model_list swinunetr --priority --priority_name priority 
+```
 
 <p align="center"><img width="100%" src="document/fig_attention_map.jpg" /></p>
 Figure. Illustration of an attention map.
