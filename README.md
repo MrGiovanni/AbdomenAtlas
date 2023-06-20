@@ -22,20 +22,6 @@ arXiv preprint arXiv:2305.09666 <br/>
 ## 0. Installation
 
 To create environment and obtain requirements see [installation instructions](document/INSTALL.md).
-```bash
-git clone https://github.com/MrGiovanni/AbdomenAtlas
-cd AbdomenAtlas/pretrained_checkpoints
-wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
-wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
-cd ..
-cd pretrained_weights/
-wget https://www.dropbox.com/s/po2zvqylwr0fuek/swin_unetr.base_5000ep_f48_lr2e-4_pretrained.pt
-cd ../
-dataname=01_Multi-Atlas_Labeling # an example
-datapath=/medical_backup/PublicAbdominalData/
-savepath=/medical_backup/Users/zzhou82/outs
-source activate atlas
-```
 
 ## 1. Download AI models (trained U-Net)
 
