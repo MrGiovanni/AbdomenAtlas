@@ -21,7 +21,7 @@ arXiv preprint arXiv:2305.09666 <br/>
 
 ## 0. Installation
 
-To create environment, see [installation instructions](INSTALL.md).
+To create environment, see [installation instructions](document/INSTALL.md).
 ```bash
 git clone https://github.com/MrGiovanni/AbdomenAtlas
 cd AbdomenAtlas/pretrained_checkpoints
