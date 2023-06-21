@@ -19,5 +19,6 @@
 10_Decathlon_pancreas_356/ct.nii.gz	10_Decathlon_pancreas_356/pseudo_label.nii.gz
 10_Decathlon_lung_058/ct.nii.gz	10_Decathlon_lung_058/pseudo_label.nii.gz
 10_Decathlon_liver_102/ct.nii.gz	10_Decathlon_liver_102/pseudo_label.nii.gz
+10_Decathlon_spleen_20/ct.nii.gz	10_Decathlon_spleen_20/pseudo_label.nii.gz
 12_CT-ORG_volume-113/ct.nii.gz	12_CT-ORG_volume-113/pseudo_label.nii.gz
 13_AbdomenCT-12organ_Organ12_0017_0000/ct.nii.gz	13_AbdomenCT-12organ_Organ12_0017_0000/pseudo_label.nii.gz
