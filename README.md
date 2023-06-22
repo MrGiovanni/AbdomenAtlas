@@ -7,7 +7,6 @@ An endeavor of such magnitude would demand a staggering **1,600 weeks** or rough
 In contrast, our annotation method has accomplished this task in **three weeks** (premised on an 8-hour workday, five days a week) while maintaining a similar or even better annotation quality.
 
 <p align="center"><img width="100%" src="document/fig_dataset_overview.jpg" /></p>
-
 <p align="center"><img width="100%" src="document/fig_visualize.gif" /></p>
 <p align="center"><img width="60%" src="document/fig_legend.png" /></p>
 
@@ -24,24 +23,28 @@ arXiv preprint arXiv:2305.09666 <br/>
 
 ## 0. Installation
 
+```bash
+git clone https://github.com/MrGiovanni/AbdomenAtlas
+```
+
 To create environment and obtain requirements see [installation instructions](document/INSTALL.md).
 
-## 1. Download AI models (trained U-Net)
+## 1. Download AI models (U-Net)
 
 The model was trained on a combination of 14 publicly available CT datasets, consisting of 3,410 (see details in [CLIP-Driven Universal Model](https://github.com/ljwztc/CLIP-Driven-Universal-Model)).
 To download the trained AI segmentation models, please request [here]() (coming soon). 
-After submitting the form, download the trained model and save it into `./pretrained_checkpoints/unet.pth`.
+After submitting the form, download the trained U-Net and save it into `./pretrained_checkpoints/unet.pth`.
 
 ## 2. Prepare your datasets
 
-It can be publicly available datasets (e.g., BTCV) or your private datasets. Currently we only take data formatted in nii.gz. This repository will help you assign annotations to these datasets, including 25 organs and 6 types of tumors.
+It can be publicly available datasets (e.g., BTCV) or your private datasets. Currently we only take data formatted in `nii.gz`. This repository will help you assign annotations to these datasets, including 25 organs and six types of tumors.
 
 ##### 2.1 Download
 
 Taking the BTCV dataset as an example, download this dataset and save it to the `datapath` directory.
 ```bash
 cd $datapath
-wget https://www.dropbox.com/s/jnv74utwh99ikus/01_Multi-Atlas_Labeling.tar.gz # 01 Multi-Atlas_Labeling.tar.gz (1.53 GB)
+wget https://www.dropbox.com/s/jnv74utwh99ikus/01_Multi-Atlas_Labeling.tar.gz
 tar -xzvf 01_Multi-Atlas_Labeling.tar.gz
 ```
 
@@ -95,10 +98,6 @@ If you want to perform the active learning process, you will need the following 
 
 <p align="center"><img width="100%" src="document/fig_attention_map.jpg" /></p>
 Figure. Illustration of an attention map.
-
-
-
-
 
 ## TODO
 
