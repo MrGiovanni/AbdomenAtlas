@@ -10,6 +10,7 @@ In contrast, our annotation method has accomplished this task in **three weeks**
 
 <p align="center"><img width="100%" src="document/fig_visualize.gif" /></p>
 <p align="center"><img width="60%" src="document/fig_legend.png" /></p>
+
 ## Paper
 
 <b>Annotating 8,000 Abdominal CT Volumes for Multi-Organ Segmentation in Three Weeks</b> <br/>
