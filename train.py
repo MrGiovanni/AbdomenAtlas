@@ -24,7 +24,7 @@ from model.Universal_model import Universal_model
 # from model.SwinUNETR_partial import SwinUNETR
 from dataset.dataloader import get_loader
 from utils import loss
-from utils.utils import dice_score, check_data, TEMPLATE, get_key, NUM_CLASS,PSEUDO_LABEL_ALL
+from utils.utils import dice_score, check_data, TEMPLATE, get_key, NUM_CLASS,PSEUDO_LABEL_ALL,containing_totemplate,merge_organ
 from optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
 
 
@@ -47,6 +47,7 @@ def train(args, train_loader, model, optimizer, loss_seg_DICE, loss_seg_CE):
         for b in range(B):
             for src,tgt in enumerate(TEMPLATE['all']):
                 y[b][src][lbl[b][0]==tgt] = 1
+        y = merge_organ(args,y,containing_totemplate)
         y = y.to(args.device)
         logit_map = model(x)
         term_seg_Dice = loss_seg_DICE.forward(logit_map, y, name, TEMPLATE)
