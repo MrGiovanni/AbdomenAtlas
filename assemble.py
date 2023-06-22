@@ -15,19 +15,19 @@ TEMPLATE_orgianl={
     '01': [1,2,3,4,5,6,7,8,9,10,11,12,13,14],
     '02': [1,0,3,4,5,6,7,0,0,0,11,0,0,14],
     '03': [6],
-    '04': [6,27],       # post process
-    '05': [2,26,32],       # post process
+    '04': [6,27], 
+    '05': [2,26,32],
     '07': [6,1,3,2,7,4,5,11,14,18,19,12,20,21,23,24],
     '08': [6, 2, 1, 11],
     '09': [1,2,3,4,5,6,7,8,9,11,12,13,14,21,22],
     '12': [6,21,16,2],  
     '13': [6,2,1,11,8,9,7,4,5,12,13,25], 
-    '14': [8,12,0,0,0,18,14,4,9,3,2,6,11,28,0,0,0,1,7,10],     # Felix data, post process
+    '14': [8,12,0,0,0,18,14,4,9,3,2,6,11,28,0,0,0,1,7,10],
     '18': [6,2,1,11,8,9,12,13,4,5,7,14,3],
-    '10_03': [6, 27],   # post process
+    '10_03': [6, 27],
     '10_06': [30],
-    '10_07': [11, 28],  # post process
-    '10_08': [15, 29],  # post process
+    '10_07': [11, 28],
+    '10_08': [15, 29],
     '10_09': [1],
     '10_10': [31],
     'all': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
@@ -155,9 +155,7 @@ def generate_label(args,original_label_file,pseudo_label_file, case,destination_
     pseudo_label_data = pseudo_label.get_fdata()
     affine = pseudo_label.affine
     our_label = pseudo_label_data
-    # temp_files_list = os.listdir(os.path.join(temp_path,'average','segmentations'))
-    # temp_files_list = os.listdir(os.path.join(temp_path,'backbones',args.backbone,'segmentations'))
-    temp_files_list = os.listdir(os.path.join(temp_path,'segmentations'))
+    temp_files_list = os.listdir(os.path.join(temp_path,'average','segmentations'))
     revised_organ_list = [f for f in temp_files_list if f.endswith('_revised.nii.gz') and not f.startswith('.')]
     if os.path.exists(original_label_file):
         original_label = nib.load(original_label_file)
@@ -176,7 +174,6 @@ def generate_label(args,original_label_file,pseudo_label_file, case,destination_
         for revised_organs in revised_organ_list:
             organ = revised_organs[:-15]
             revised_organs = nib.load(os.path.join(temp_path,'average','segmentations',revised_organs))
-            # revised_organs = nib.load(os.path.join(temp_path,'segmentations',revised_organs))
             revised_organs_data = revised_organs.get_fdata()
             our_label[pseudo_label_data==TEMPLATE[organ]]=0
             our_label[revised_organs_data==1]=TEMPLATE[organ]
@@ -216,8 +213,7 @@ def main_process(args,cases_list):
         or_destination_file = os.path.join(destination_path,'original_label.nii.gz')
         if os.path.exists(or_source_file):
             shutil.copy2(or_source_file, or_destination_file)
-        # ps_source_file = os.path.join(args.data_path,args.dataset_name,cases_list[i],'backbones',args.backbone,'pseudo_label.nii.gz')
-        ps_source_file = os.path.join(args.data_path,args.dataset_name,args.subfolder,cases_list[i],'pseudo_label.nii.gz')
+        ps_source_file = os.path.join(args.data_path,args.dataset_name,cases_list[i],'backbones',args.backbone,'pseudo_label.nii.gz')
         ps_destination_file = os.path.join(destination_path,'pseudo_label_'+args.version+'.nii.gz')
         if os.path.exists(ps_source_file):
             shutil.copy2(ps_source_file, ps_destination_file)
@@ -226,9 +222,7 @@ def main_process(args,cases_list):
 
         if not os.path.exists(seg_path):
             os.mkdir(seg_path)
-        # temp_path = os.path.join(args.data_path,args.dataset_name,cases_list[i],'average','segmentations')
-        # temp_path = os.path.join(args.data_path,args.dataset_name,cases_list[i],'backbones',args.backbone,'segmentations') # dataset 18
-        temp_path = os.path.join(args.data_path,args.dataset_name,args.subfolder,cases_list[i],'segmentations')
+        temp_path = os.path.join(args.data_path,args.dataset_name,cases_list[i],'average','segmentations')
         temp_files_list = os.listdir(temp_path)
         revised_organ_list = [f[:-15] for f in temp_files_list if f.endswith('_revised.nii.gz') and not f.startswith('.')]
         for f in temp_files_list:
@@ -245,7 +239,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', default='/ccvl/net/ccvl15/zzhou82/LargePseudoDataset', help='The path of your data')
     parser.add_argument('--dataset_name', default='14_FELIX', help='The dataset name')
-    parser.add_argument('--subfolder', default='ARTERIAL', help='The subfolder name')
+    parser.add_argument('--subfolder', default='', help='The subfolder name')
     parser.add_argument('--backbone', default='swinunetr', help='The backbone')
     parser.add_argument('--save_dir', default='/ccvl/net/ccvl15/tzhang85/AbdomenAtlas_8K_internal', help='The saving path')
     parser.add_argument('--version', default='V1', help='The version of revised label')
