@@ -7,7 +7,7 @@ An endeavor of such magnitude would demand a staggering **1,600 weeks** or rough
 In contrast, our annotation method has accomplished this task in **three weeks** (premised on an 8-hour workday, five days a week) while maintaining a similar or even better annotation quality.
 
 <p align="center"><img width="100%" src="document/fig_dataset_overview.jpg" /></p>
-<p align="center"><img width="100%" src="document/fig_visualize.gif" /></p>
+<p align="center"><img width="100%" src="document/fig_dataset.gif" /></p>
 <p align="center"><img width="60%" src="document/fig_legend.png" /></p>
 
 ## Paper
@@ -33,7 +33,7 @@ To create environment and obtain requirements see [installation instructions](do
 
 The model was trained on a combination of 14 publicly available CT datasets, consisting of 3,410 (see details in [CLIP-Driven Universal Model](https://github.com/ljwztc/CLIP-Driven-Universal-Model)).
 To download the trained AI segmentation models, please request [here]() (coming soon). 
-After submitting the form, download the trained U-Net and save it into `./pretrained_checkpoints/unet.pth`.
+After submitting the form, download the trained U-Net and save it into `./pretrained_checkpoints/swinunetr.pth`.
 
 ## 2. Prepare your datasets
 
