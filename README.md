@@ -68,7 +68,7 @@ CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -W ignore test.py --resume pretrained_checkpoints/swinunetr.pth --backbone swinunetr --save_dir $savepath --dataset_list $dataname --data_root_path $datapath --store_result >> logs/$dataname.swinunetr.txt
 ```
-To generate attention maps for active learning process (Step 5 [optional]), remember to save entropy and soft predictions by using the options `--store_entropy` and `--save_soft_pred`
+To generate attention maps for active learning process (Step 5 [optional]), remember to save entropy and soft predictions by using the options `--store_entropy` and `--store_soft_pred`
 
 ## 4. Data Assembly
 
