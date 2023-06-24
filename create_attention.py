@@ -23,7 +23,7 @@ def create_attention(args):
             else: 
                 template_key = get_key(dataset_name)
             organ_dataset = TEMPLATE[template_key]
-            organ_index = [organ for organ in organ_target if organ not in organ_dataset]
+            organ_index = [organ for organ in organ_target if organ in organ_dataset]
             case_name = all_lines[line].strip().split()[0].split('.')[0].split('/')[-1]
             name_id.append(case_name)
             ct_path = os.path.join(args.data_root_path,dataset_name,case_name,'ct.nii.gz')
