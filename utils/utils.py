@@ -1045,7 +1045,6 @@ containing_totemplate = {
 }
 
 def merge_organ(args,lbl,containing_totemplate):
-    new_lbl = lbl.clone()
     B, C, W, H, D = lbl.shape
     if args.internal_organ:
         for b in range(B):
@@ -1055,12 +1054,13 @@ def merge_organ(args,lbl,containing_totemplate):
                     temp = lbl[b][t-1].type(torch.bool)
                     mask = (mask) | (temp)
                 mask = (mask) | (lbl[b][large_organ_index-1].type(torch.bool))
-                new_lbl[b][large_organ_index-1][mask] = 1
+                lbl[b][large_organ_index-1][mask] = 1
+
     # else:
         # The label is not from our dataset
 
 
-    return new_lbl
+    return lbl
 
 
 if __name__ == "__main__":
