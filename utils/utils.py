@@ -1045,7 +1045,7 @@ containing_totemplate = {
 }
 
 def merge_organ(args,lbl,containing_totemplate):
-    new_lbl = torch.zeros_like(lbl)
+    new_lbl = lbl.clone()
     B, C, W, H, D = lbl.shape
     if args.internal_organ:
         for b in range(B):
