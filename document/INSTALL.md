@@ -27,8 +27,8 @@ wget https://www.dropbox.com/s/po2zvqylwr0fuek/swin_unetr.base_5000ep_f48_lr2e-4
 wget https://www.dropbox.com/s/lh5kuyjxwjsxjpl/Genesis_Chest_CT.pt
 cd ../
 cd pretrained_checkpoints/
-wget swinunetr.pth (coming soon)
-wget unet.pth (coming soon)
+wget https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth
+wget https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth
 cd ..
 ```
 
