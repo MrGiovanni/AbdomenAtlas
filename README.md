@@ -19,7 +19,7 @@ In contrast, our annotation method has accomplished this task in **three weeks**
 <sup>3 </sup>City University of Hong Kong,   <br/>
 <sup>4 </sup>NVIDIA <br/>
 NeurIPS 2023 <br/>
-[paper](https://arxiv.org/pdf/2305.09666.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | dataset (coming soon)
+[paper](https://www.cs.jhu.edu/~alanlab/Pubs23/qu2023abdomenatlas.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | dataset (coming soon)
 
 ## 0. Installation
 
