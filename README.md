@@ -32,8 +32,12 @@ See [installation instructions](document/INSTALL.md) to create an environment an
 ## 1. Download AI models
 
 We offer pre-trained checkpoints of Swin UNETR and U-Net. The models were trained on a combination of 14 publicly available CT datasets, consisting of 3,410 (see details in [CLIP-Driven Universal Model](https://github.com/ljwztc/CLIP-Driven-Universal-Model)).
-To download the trained AI segmentation models, please request [here]() (coming soon). 
-After submitting the form, download the trained models and save them into `./pretrained_checkpoints/`.
+Download the trained models and save them into `./pretrained_checkpoints/`.
+
+| Architecture | Param | Download |
+|  ----  | ----  |  ----  |
+| U-Net  | | [link](https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth) |
+| Swin UNETR | | [link](https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth) |
 
 ## 2. Prepare your datasets
 
