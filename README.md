@@ -21,6 +21,8 @@ In contrast, our annotation method has accomplished this task in **three weeks**
 NeurIPS 2023 <br/>
 [paper](https://www.cs.jhu.edu/~alanlab/Pubs23/qu2023abdomenatlas.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | dataset (coming soon)
 
+We have maintained a document for [Frequently Asked Questions](document/frequently_asked_questions.md)
+
 ## 0. Installation
 
 ```bash
