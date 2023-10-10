@@ -30,7 +30,7 @@ NeurIPS 2023 <br/>
 RSNA 2023 (Oral Presentation) <br/>
 [paper](document/rsna_abstract.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas)
 
-- **We have maintained a document for [Frequently Asked Questions](document/frequently_asked_questions.md).**
+**&#9733; We have maintained a document for [Frequently Asked Questions](document/frequently_asked_questions.md).**
 
 ## 0. Installation
 
