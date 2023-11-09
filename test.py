@@ -151,7 +151,7 @@ def validation(model, ValLoader, val_transforms, args):
                 BATCH = invert_transform(organ_name_target,batch,val_transforms)
                 organ_invertd = np.squeeze(BATCH[0][organ_name_target].numpy(),axis= 0)*255
                 organ_save = nib.Nifti1Image(organ_invertd.astype(np.uint8),affine_temp)
-                new_name = os.path.join(save_dir, organ_soft_pred_save_path, organ_name_target+'.nii.gz')
+                new_name = os.path.join(organ_soft_pred_save_path, organ_name_target+'.nii.gz')
                 print('organ soft pred saved in path: %s'%(new_name))
                 nib.save(organ_save,new_name)
             
