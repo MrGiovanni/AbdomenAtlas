@@ -230,16 +230,17 @@ def main():
                     backbone=args.backbone,
                     encoding='word_embedding'
                     )
-    #Load pre-trained weights
+    # Load pre-trained weights
     store_dict = model.state_dict()
+    store_dict_keys = [key for key, value in store_dict.items()]
     checkpoint = torch.load(args.resume)
     load_dict = checkpoint['net']
+    load_dict_value = [value for key, value in load_dict.items()]
     # args.epoch = checkpoint['epoch']
 
-    for key, value in load_dict.items():
-        name = '.'.join(key.split('.')[1:])
-        store_dict[name] = value
-
+    for i in range(len(store_dict)):
+        store_dict[store_dict_keys[i]] = load_dict_value[i]
+        
     model.load_state_dict(store_dict)
     print('Use pretrained weights')
 
