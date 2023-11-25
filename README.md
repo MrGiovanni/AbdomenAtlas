@@ -118,8 +118,8 @@ Figure. Illustration of an attention map.
 ## TODO
 
 - [x] Release pre-trained AI model checkpoints (U-Net and Swin UNETR)
+- [x] Release the AbdomenAtlas-8K dataset (we commit to releasing 3,410 of the 8,448 CT volumes)
 - [ ] Support more data formats (e.g., dicom)
-- [ ] Release the AbdomenAtlas-8K dataset (we commit to releasing 3,410 of the 8,448 CT volumes)
 
 ## Citation 
 
