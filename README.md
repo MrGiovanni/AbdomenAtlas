@@ -28,7 +28,7 @@ NeurIPS 2023 <br/>
 <sup>3 </sup>City University of Hong Kong,   <br/>
 <sup>4 </sup>NVIDIA <br/>
 RSNA 2023 (Oral Presentation) <br/>
-[paper](document/rsna_abstract.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas)
+[paper](document/rsna_abstract.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | [slides](document/rsna_slides.pdf)
 
 **&#9733; We have maintained a document for [Frequently Asked Questions](document/frequently_asked_questions.md).**
 
