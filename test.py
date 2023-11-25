@@ -151,7 +151,7 @@ def validation(model, ValLoader, val_transforms, args):
                 BATCH = invert_transform(organ_name_target,batch,val_transforms)
                 organ_invertd = np.squeeze(BATCH[0][organ_name_target].numpy(),axis= 0)*255
                 organ_save = nib.Nifti1Image(organ_invertd.astype(np.uint8),affine_temp)
-                new_name = os.path.join(save_dir, organ_soft_pred_save_path, organ_name_target+'.nii.gz')
+                new_name = os.path.join(organ_soft_pred_save_path, organ_name_target+'.nii.gz')
                 print('organ soft pred saved in path: %s'%(new_name))
                 nib.save(organ_save,new_name)
             
@@ -230,16 +230,17 @@ def main():
                     backbone=args.backbone,
                     encoding='word_embedding'
                     )
-    #Load pre-trained weights
+    # Load pre-trained weights
     store_dict = model.state_dict()
+    store_dict_keys = [key for key, value in store_dict.items()]
     checkpoint = torch.load(args.resume)
     load_dict = checkpoint['net']
+    load_dict_value = [value for key, value in load_dict.items()]
     # args.epoch = checkpoint['epoch']
 
-    for key, value in load_dict.items():
-        name = '.'.join(key.split('.')[1:])
-        store_dict[name] = value
-
+    for i in range(len(store_dict)):
+        store_dict[store_dict_keys[i]] = load_dict_value[i]
+        
     model.load_state_dict(store_dict)
     print('Use pretrained weights')
 
