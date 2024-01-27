@@ -1,4 +1,4 @@
-# AbdonmenAtlas-8K
+# AbdonmenAtlas 1.0
 
 We are proud to introduce AbdomenAtlas-8K, a substantial multi-organ dataset with the spleen, liver, kidneys, stomach, gallbladder, pancreas, aorta, and IVC annotated in **8,448** CT volumes, totaling **3.2 million** CT slices. 
 
@@ -29,6 +29,8 @@ NeurIPS 2023 <br/>
 <sup>4 </sup>NVIDIA <br/>
 RSNA 2023 (Oral Presentation) <br/>
 [paper](document/rsna_abstract.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | [slides](document/rsna_slides.pdf)
+
+**&#9733; An improved version, AbdomenAtlas 1.1, can be found at [SuPreM](https://github.com/MrGiovanni/SuPreM)**
 
 **&#9733; We have maintained a document for [Frequently Asked Questions](document/frequently_asked_questions.md).**
 
