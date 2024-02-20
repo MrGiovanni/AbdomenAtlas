@@ -132,6 +132,13 @@ Figure. Illustration of an attention map.
   journal={arXiv preprint arXiv:2305.09666},
   year={2023}
 }
+
+@inproceedings{li2024well,
+  title={How Well Do Supervised Models Transfer to 3D Image Segmentation?},
+  author={Li, Wenxuan and Yuille, Alan and Zhou, Zongwei},
+  booktitle={The Twelfth International Conference on Learning Representations},
+  year={2024}
+}
 ```
 
 ## Acknowledgements
