@@ -32,7 +32,7 @@ RSNA 2023 (Oral Presentation) <br/>
 
 **&#9733; An improved version, AbdomenAtlas 1.1, can be found at [SuPreM](https://github.com/MrGiovanni/SuPreM) [![GitHub stars](https://img.shields.io/github/stars/MrGiovanni/SuPreM.svg?logo=github&label=Stars)](https://github.com/MrGiovanni/SuPreM).**
 
-**&#9733; Our AbdomenAtlas 1.0 can be downloaded at [Hugging Face](https://huggingface.co/datasets/AbdomenAtlas/AbdomenAtlas_1.0_Mini).**
+**&#9733; Our AbdomenAtlas 1.0 can be downloaded at [Hugging Face](https://huggingface.co/datasets/AbdomenAtlas/AbdomenAtlas_1.0_Mini) and [JHU Data Repository](https://archive.data.jhu.edu/dataset.xhtml?persistentId=doi:10.7281/T1/7ELIJW).**
 
 **&#9733; We have maintained a document for [Frequently Asked Questions](document/frequently_asked_questions.md).**
 
