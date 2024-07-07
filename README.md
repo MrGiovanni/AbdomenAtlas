@@ -19,7 +19,7 @@ In contrast, our annotation method has accomplished this task in **three weeks**
 <sup>3 </sup>City University of Hong Kong,   <br/>
 <sup>4 </sup>NVIDIA <br/>
 NeurIPS 2023 <br/>
-[paper](https://www.cs.jhu.edu/~alanlab/Pubs23/qu2023abdomenatlas.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | [dataset](https://huggingface.co/datasets/AbdomenAtlas/AbdomenAtlas_1.0_Mini) | [poster](document/neurips_poster.pdf)
+[paper](https://www.cs.jhu.edu/~alanlab/Pubs23/qu2023abdomenatlas.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | [dataset](https://huggingface.co/datasets/AbdomenAtlas/AbdomenAtlas1.0Mini) | [poster](document/neurips_poster.pdf)
 
 <b>AbdomenAtlas-8K: Human-in-the-Loop Annotating Eight Anatomical Structures for 8,448 Three-Dimensional Computed Tomography Volumes in Three Weeks</b> <br/>
 [Chongyu Qu](https://github.com/Chongyu1117)<sup>1</sup>, [Tiezheng Zhang](https://github.com/ollie-ztz)<sup>1</sup>, [Hualin Qiao](https://www.linkedin.com/in/hualin-qiao-a29438210/)<sup>2</sup>, [Jie Liu](https://ljwztc.github.io/)<sup>3</sup>, [Yucheng Tang](https://scholar.google.com/citations?hl=en&user=0xheliUAAAAJ)<sup>4</sup>, [Alan L. Yuille](https://www.cs.jhu.edu/~ayuille/)<sup>1</sup>, and [Zongwei Zhou](https://www.zongweiz.com/)<sup>1,*</sup> <br/>
@@ -32,7 +32,9 @@ RSNA 2023 (Oral Presentation) <br/>
 
 **&#9733; An improved version, AbdomenAtlas 1.1, can be found at [SuPreM](https://github.com/MrGiovanni/SuPreM) [![GitHub stars](https://img.shields.io/github/stars/MrGiovanni/SuPreM.svg?logo=github&label=Stars)](https://github.com/MrGiovanni/SuPreM).**
 
-**&#9733; Our AbdomenAtlas 1.0 can be downloaded at [Hugging Face](https://huggingface.co/datasets/AbdomenAtlas/AbdomenAtlas_1.0_Mini) and [JHU Data Repository](https://archive.data.jhu.edu/dataset.xhtml?persistentId=doi:10.7281/T1/7ELIJW).**
+**&#9733; Touchstone - [Let's benchmark!](https://www.cs.jhu.edu/~zongwei/advert/TutorialBenchmarkV1.pdf) [![GitHub stars](https://img.shields.io/github/stars/MrGiovanni/Touchstone.svg?logo=github&label=Stars)](https://github.com/MrGiovanni/Touchstone)**
+
+**&#9733; Our AbdomenAtlas 1.0 can be downloaded at Huggingface ([option 1](https://huggingface.co/datasets/AbdomenAtlas/AbdomenAtlas1.0Mini) or [option 2](https://huggingface.co/datasets/AbdomenAtlas/_AbdomenAtlas1.0Mini)) and [JHU Data Repository](https://archive.data.jhu.edu/dataset.xhtml?persistentId=doi:10.7281/T1/7ELIJW).**
 
 **&#9733; We have maintained a document for [Frequently Asked Questions](document/frequently_asked_questions.md).**
 
