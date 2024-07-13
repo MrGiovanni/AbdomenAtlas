@@ -10,6 +10,64 @@ In contrast, our annotation method has accomplished this task in **three weeks**
 <p align="center"><img width="100%" src="document/fig_dataset.gif" /></p>
 <p align="center"><img width="60%" src="document/fig_legend.png" /></p>
 
+## Data - AbdomenAtlas1.0Mini
+
+<table>
+  <tr>
+    <th></th>
+    <th>Option</th>
+    <th>Image & Mask</th>
+    <th>Image-Only</th>
+    <th>Mask-Only</th>
+  </tr>
+  <tr>
+    <td rowspan="3">Huggingface</td>
+    <td>All-in-one</td>
+    <td></td>
+    <td></td>
+    <td>Download (3.3GB)<details><div>A single compressed file containing all labels.</div></details></td>
+  </tr>
+  <tr>
+    <td>Zips</td>
+    <td><a href="https://huggingface.co/datasets/AbdomenAtlas/_AbdomenAtlas1.0Mini">Download (328GB)</a><details><div>11 compressed files in TAR.GZ format.</div></details></td>
+    <td>Download<details><div>11 compressed files in TAR.GZ format.</div></details></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Folders</td>
+    <td><a href="https://huggingface.co/datasets/AbdomenAtlas/AbdomenAtlas1.0Mini">Download (340GB)</a><details><div>5,195 folders, each containing CT, combined labels, and a segmentations folder of nine masks in NII.GZ format.</div></details></td>
+    <td>Download (325GB)<details><div>5,195 folders, each containing CT in NII.GZ format.</div></details></td>
+    <td>Download (15GB)<details><div>5,195 folders, each containing combined labels, and a segmentations folder of nine masks in NII.GZ format.</div></details></td>
+  </tr>
+  <tr>
+    <td rowspan="2">Dropbox</td>
+    <td>All-in-one</td>
+    <td><a href="https://www.dropbox.com/scl/fi/bqk780hn794gep6upfrge/AbdomenAtlas1.0Mini.tar.gz?rlkey=gjiiz731us18p9u7iouhin3gw&dl=0">Download (306GB)</a><details><div>A single compressed file containing all images and labels.</div></details></td>
+    <td><a href="https://www.dropbox.com/scl/fi/v6esel9mun1k32mpmo690/AbdomenAtlas1.0Mini.tar.gz?rlkey=b1mxdmvasr9znpp31cup9eqhk&dl=0">Download (303GB)</a><details><div>A single compressed file containing all images.</div></details></td>
+    <td><a href="https://www.dropbox.com/scl/fi/v6esel9mun1k32mpmo690/AbdomenAtlas1.0Mini.tar.gz?rlkey=b1mxdmvasr9znpp31cup9eqhk&dl=0">Download (3.3GB)</a><details><div>A single compressed file containing all labels.</div></details></td>
+  </tr>
+  <tr>
+    <td>Zips</td>
+    <td><a href="https://www.dropbox.com/scl/fo/jy4sf9mk3zzlty9qfhgx6/AAAJKO1bYvjL5J3CrU-w2rs?rlkey=j54u9eu968rw3ntd7bc4e5wd4&dl=0">Download (328GB)</a><details><div>11 compressed files in TAR.GZ format.</div></details></td>
+    <td>Download<details><div>11 compressed files in TAR.GZ format.</div></details></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td rowspan="2">Baidu Wangpan</td>
+    <td>All-in-one</td>
+    <td><a href="https://pan.baidu.com/s/1MtVfCVu3bk0Vd5GcR1qXhQ?pwd=0317">Download (306GB)</a><details><div>A single compressed file containing all images and labels.</div></details></td>
+    <td>Download (303GB)<details><div>A single compressed file containing all images.</div></details></td>
+    <td><a href="https://pan.baidu.com/s/1r3f4AhSffgIGauI0wRGEtw?pwd=0317">Download (3.3GB)</a><details><div>A single compressed file containing all labels.</div></details></td>
+  </tr>
+  <tr>
+    <td>Zips</td>
+    <td><a href="https://pan.baidu.com/s/1AdJmhFXPDua63wQ_zAEEiQ?pwd=0317">Download (328GB)</a><details><div>11 compressed files in TAR.GZ format.</div></details></td>
+    <td>Download<details><div>11 compressed files in TAR.GZ format.</div></details></td>
+    <td></td>
+  </tr>
+</table>
+
+
 ## Paper
 
 <b>AbdomenAtlas-8K: Annotating 8,000 CT Volumes for Multi-Organ Segmentation in Three Weeks</b> <br/>
@@ -33,8 +91,6 @@ RSNA 2023 (Oral Presentation) <br/>
 **&#9733; An improved version, AbdomenAtlas 1.1, can be found at [SuPreM](https://github.com/MrGiovanni/SuPreM) [![GitHub stars](https://img.shields.io/github/stars/MrGiovanni/SuPreM.svg?logo=github&label=Stars)](https://github.com/MrGiovanni/SuPreM).**
 
 **&#9733; Touchstone - [Let's benchmark!](https://www.cs.jhu.edu/~zongwei/advert/TutorialBenchmarkV1.pdf) [![GitHub stars](https://img.shields.io/github/stars/MrGiovanni/Touchstone.svg?logo=github&label=Stars)](https://github.com/MrGiovanni/Touchstone)**
-
-**&#9733; Our AbdomenAtlas 1.0 can be downloaded at Huggingface ([option 1](https://huggingface.co/datasets/AbdomenAtlas/AbdomenAtlas1.0Mini) or [option 2](https://huggingface.co/datasets/AbdomenAtlas/_AbdomenAtlas1.0Mini)) and [JHU Data Repository](https://archive.data.jhu.edu/dataset.xhtml?persistentId=doi:10.7281/T1/7ELIJW).**
 
 **&#9733; We have maintained a document for [Frequently Asked Questions](document/frequently_asked_questions.md).**
 
