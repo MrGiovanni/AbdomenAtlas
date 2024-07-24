@@ -56,7 +56,7 @@ In contrast, our annotation method has accomplished this task in **three weeks**
     <td rowspan="2">Baidu Wangpan</td>
     <td>All-in-one</td>
     <td><a href="https://pan.baidu.com/s/1MtVfCVu3bk0Vd5GcR1qXhQ?pwd=0317">Download (306GB)</a><details><div>A single compressed file containing all images and labels.</div></details></td>
-    <td>Download (303GB)<details><div>A single compressed file containing all images.</div></details></td>
+    <td><a href="https://pan.baidu.com/s/1-HQO-bYmeC0xFusqe-DwcA?pwd=0317">Download (303GB)</a><details><div>A single compressed file containing all images.</div></details></td>
     <td><a href="https://pan.baidu.com/s/1r3f4AhSffgIGauI0wRGEtw?pwd=0317">Download (3.3GB)</a><details><div>A single compressed file containing all labels.</div></details></td>
   </tr>
   <tr>
