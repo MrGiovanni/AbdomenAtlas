@@ -192,6 +192,12 @@ Figure. Illustration of an attention map.
 ## Citation 
 
 ```
+@article{li2024abdomenatlas,
+  title={AbdomenAtlas: A Large-Scale, Detailed-Annotated, \& Multi-Center Dataset for Efficient Transfer Learning and Open Algorithmic Benchmarking},
+  author={Li, Wenxuan and Qu, Chongyu and Chen, Xiaoxi and Bassi, Pedro RAS and Shi, Yijia and Lai, Yuxiang and Yu, Qian and Xue, Huimin and Chen, Yixiong and Lin, Xiaorui and others},
+  journal={arXiv preprint arXiv:2407.16697},
+  year={2024}
+}
 @article{qu2023abdomenatlas,
   title={Abdomenatlas-8k: Annotating 8,000 CT volumes for multi-organ segmentation in three weeks},
   author={Qu, Chongyu and Zhang, Tiezheng and Qiao, Hualin and Tang, Yucheng and Yuille, Alan L and Zhou, Zongwei and others},
