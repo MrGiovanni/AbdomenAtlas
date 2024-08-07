@@ -193,11 +193,15 @@ Figure. Illustration of an attention map.
 
 ```
 @article{li2024abdomenatlas,
-  title={AbdomenAtlas: A Large-Scale, Detailed-Annotated, \& Multi-Center Dataset for Efficient Transfer Learning and Open Algorithmic Benchmarking},
+  title={AbdomenAtlas: A large-scale, detailed-annotated, \& multi-center dataset for efficient transfer learning and open algorithmic benchmarking},
   author={Li, Wenxuan and Qu, Chongyu and Chen, Xiaoxi and Bassi, Pedro RAS and Shi, Yijia and Lai, Yuxiang and Yu, Qian and Xue, Huimin and Chen, Yixiong and Lin, Xiaorui and others},
-  journal={arXiv preprint arXiv:2407.16697},
-  year={2024}
+  journal={Medical Image Analysis},
+  pages={103285},
+  year={2024},
+  publisher={Elsevier},
+  url={https://github.com/MrGiovanni/AbdomenAtlas}
 }
+
 @article{qu2023abdomenatlas,
   title={Abdomenatlas-8k: Annotating 8,000 CT volumes for multi-organ segmentation in three weeks},
   author={Qu, Chongyu and Zhang, Tiezheng and Qiao, Hualin and Tang, Yucheng and Yuille, Alan L and Zhou, Zongwei and others},
@@ -205,6 +209,7 @@ Figure. Illustration of an attention map.
   volume={36},
   year={2023}
 }
+
 @inproceedings{li2024well,
   title={How Well Do Supervised Models Transfer to 3D Image Segmentation?},
   author={Li, Wenxuan and Yuille, Alan and Zhou, Zongwei},
