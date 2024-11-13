@@ -115,8 +115,8 @@ Download the trained models and save them into `./pretrained_checkpoints/`.
 
 | Architecture | Param | Download |
 |  ----  | ----  |  ----  |
-| U-Net  | 19.08M | [link](https://www.dropbox.com/s/lyunaue0wwhmv5w/unet.pth) |
-| Swin UNETR | 62.19M | [link](https://www.dropbox.com/s/jdsodw2vemsy8sz/swinunetr.pth) |
+| U-Net  | 19.08M | [link](https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_clip_driven_universal_unet_2100.pth?download=true) |
+| Swin UNETR | 62.19M | [link](https://huggingface.co/MrGiovanni/SuPreM/resolve/main/supervised_clip_driven_universal_swin_unetr_2100.pth?download=true) |
 
 ## 2. Prepare your datasets
 
