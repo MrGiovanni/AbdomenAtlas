@@ -92,7 +92,7 @@ NeurIPS 2023 <br/>
 <sup>3 </sup>City University of Hong Kong,   <br/>
 <sup>4 </sup>NVIDIA <br/>
 RSNA 2023 (Oral Presentation) <br/>
-[paper](document/rsna_abstract.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | [slides](document/rsna_slides.pdf)
+[paper](document/rsna_abstract.pdf) | [code](https://github.com/MrGiovanni/AbdomenAtlas) | [slides (rsna 2023)](document/rsna2023_slides.pdf) | [slides (rsna 2024)](document/rsna2024_slides.pdf)
 
 **&#9733; An improved version, AbdomenAtlas 1.1, can be found at [SuPreM](https://github.com/MrGiovanni/SuPreM) [![GitHub stars](https://img.shields.io/github/stars/MrGiovanni/SuPreM.svg?logo=github&label=Stars)](https://github.com/MrGiovanni/SuPreM).**
 
