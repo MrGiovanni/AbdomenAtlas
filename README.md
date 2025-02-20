@@ -78,6 +78,56 @@ In contrast, our annotation method has accomplished this task in **three weeks**
   </tr>
 </table>
 
+<details>
+<summary style="margin-left: 25px;">Class map for 9 classes in AbdomenAtlas 1.0 and 25 classes in AbdomenAtlas 1.1</summary>
+<div style="margin-left: 25px;">
+
+```python
+# class map for the AbdomenAtlas 1.0 dataset
+class_map_abdomenatlas_1_0 = {
+    1: 'aorta',
+    2: 'gall_bladder',
+    3: 'kidney_left',
+    4: 'kidney_right',
+    5: 'liver',
+    6: 'pancreas',
+    7: 'postcava',
+    8: 'spleen',
+    9: 'stomach',
+    }
+
+# class map for the AbdomenAtlas 1.1 dataset
+class_map_abdomenatlas_1_1 = {
+    1: 'aorta', 
+    2: 'gall_bladder', 
+    3: 'kidney_left', 
+    4: 'kidney_right', 
+    5: 'liver', 
+    6: 'pancreas', 
+    7: 'postcava', 
+    8: 'spleen', 
+    9: 'stomach', 
+    10: 'adrenal_gland_left', 
+    11: 'adrenal_gland_right', 
+    12: 'bladder', 
+    13: 'celiac_trunk', 
+    14: 'colon', 
+    15: 'duodenum', 
+    16: 'esophagus', 
+    17: 'femur_left', 
+    18: 'femur_right', 
+    19: 'hepatic_vessel', 
+    20: 'intestine', 
+    21: 'lung_left', 
+    22: 'lung_right', 
+    23: 'portal_vein_and_splenic_vein', 
+    24: 'prostate', 
+    25: 'rectum'
+    }
+```
+
+</div>
+</details>
 
 ## Paper
 
