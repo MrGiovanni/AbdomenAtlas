@@ -43,12 +43,11 @@ def train(args, train_loader, model, optimizer, loss_seg_DICE, loss_seg_CE):
     for step, batch in enumerate(epoch_iterator):
         x, lbl, name = batch["image"].to(args.device), batch["label"].float(), batch['name']
         B, C, W, H, D = lbl.shape
-        y = torch.zeros(B,NUM_CLASS,W,H,D)
+        y = torch.zeros(B,NUM_CLASS,W,H,D, device=args.device)
         for b in range(B):
             for src,tgt in enumerate(TEMPLATE['all']):
                 y[b][src][lbl[b][0]==tgt] = 1
         y = merge_organ(args,y,containing_totemplate)
-        y = y.to(args.device)
         logit_map = model(x)
         term_seg_Dice = loss_seg_DICE.forward(logit_map, y, name, TEMPLATE)
         term_seg_BCE = loss_seg_CE.forward(logit_map, y, name, TEMPLATE)
@@ -62,7 +61,6 @@ def train(args, train_loader, model, optimizer, loss_seg_DICE, loss_seg_CE):
         )
         loss_bce_ave += term_seg_BCE.item()
         loss_dice_ave += term_seg_Dice.item()
-        torch.cuda.empty_cache()
     print('Epoch=%d: ave_dice_loss=%2.5f, ave_bce_loss=%2.5f' % (args.epoch, loss_dice_ave/len(epoch_iterator), loss_bce_ave/len(epoch_iterator)))
     
     return loss_dice_ave/len(epoch_iterator), loss_bce_ave/len(epoch_iterator)

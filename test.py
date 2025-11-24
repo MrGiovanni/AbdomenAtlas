@@ -89,7 +89,6 @@ def validation(model, ValLoader, val_transforms, args):
         #pred_hard = threshold_organ(pred_sigmoid, organ=args.threshold_organ, threshold=args.threshold)
         pred_hard = threshold_organ(pred_sigmoid,args)
         pred_hard = pred_hard.cpu()
-        torch.cuda.empty_cache()
 
         B = pred_hard.shape[0]
         for b in range(B):
@@ -154,8 +153,6 @@ def validation(model, ValLoader, val_transforms, args):
                 new_name = os.path.join(organ_soft_pred_save_path, organ_name_target+'.nii.gz')
                 print('organ soft pred saved in path: %s'%(new_name))
                 nib.save(organ_save,new_name)
-            
-        torch.cuda.empty_cache()
     
 
  

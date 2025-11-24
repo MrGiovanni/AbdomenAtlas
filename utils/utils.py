@@ -688,16 +688,12 @@ def threshold_organ(data, args,organ=None, threshold=None):
     ## data: sigmoid value
     ## threshold_list: a list of organ threshold
     B = data.shape[0]
-    threshold_list = []
     if organ:
         THRESHOLD_DIC[organ] = threshold
-    for key, value in THRESHOLD_DIC.items():
-        threshold_list.append(value)
-    if args.cpu:
-        threshold_list = torch.tensor(threshold_list).repeat(B, 1).reshape(B,len(threshold_list),1,1,1)
-    else:
-        threshold_list = torch.tensor(threshold_list).repeat(B, 1).reshape(B,len(threshold_list),1,1,1).cuda()
-    pred_hard = data > threshold_list
+    threshold_list = list(THRESHOLD_DIC.values())
+    device = 'cpu' if args.cpu else data.device
+    threshold_tensor = torch.tensor(threshold_list, device=device).repeat(B, 1).reshape(B, len(threshold_list), 1, 1, 1)
+    pred_hard = data > threshold_tensor
     return pred_hard
 
 def save_organ_label(batch,save_dir,input_transform,organ_index):
@@ -786,12 +782,17 @@ def merge_label(pred_bmask, name):
 
     return merged_label_v1, merged_label_v2
 
+def _create_label_tensor(shape, device_flag):
+    """Helper function to create label tensors on the appropriate device."""
+    B, C, W, H, D = shape
+    if device_flag:
+        return torch.zeros(B, 1, W, H, D)
+    else:
+        return torch.zeros(B, 1, W, H, D).cuda()
+
 def pseudo_label_all_organ(pred_bmask,args):
     B, C, W, H, D = pred_bmask.shape
-    if args.cpu:
-        pseudo_label = torch.zeros(B,1,W,H,D)
-    else:
-        pseudo_label = torch.zeros(B,1,W,H,D).cuda()
+    pseudo_label = _create_label_tensor(pred_bmask.shape, args.cpu)
     for b in range(B):
         template_key ='all'
         pseudo_label_mapping = PSEUDO_LABEL_ALL[template_key]
@@ -802,10 +803,7 @@ def pseudo_label_all_organ(pred_bmask,args):
 
 def pseudo_label_single_organ(pred_bmask,organ_index,args):
     B, C, W, H, D = pred_bmask.shape
-    if args.cpu:
-        pseudo_label_single_organ = torch.zeros(B,1,W,H,D)
-    else:
-        pseudo_label_single_organ = torch.zeros(B,1,W,H,D).cuda()
+    pseudo_label_single_organ = _create_label_tensor(pred_bmask.shape, args.cpu)
     for b in range(B):
         template_key = ORGAN_NAME[organ_index-1]
         pseudo_label_single_organ_mapping = PSEUDO_LABEL_ALL[template_key]

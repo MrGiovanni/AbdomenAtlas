@@ -69,76 +69,47 @@ def rl_split(original_data, organ_index, right_index, left_index):
     return label_raw 
 def Split(args,original_data):
     dataset_index = args.dataset_name[:2]
-    if dataset_index == '02':
-        print("02")
-        organ_index = 2
-        right_index =2 
-        left_index =3
-        original_data = rl_split(original_data, organ_index, right_index, left_index)
-
-    if dataset_index == '05':
-        print("05")
-        organ_index = 2
-        right_index =2 
-        left_index =3
-        original_data = rl_split(original_data, organ_index, right_index, left_index)
     
-    if dataset_index == '08':
-        print("08")
-        organ_index = 2
-        right_index =2 
-        left_index =3
-        original_data = rl_split(original_data, organ_index, right_index, left_index)
+    # Define split configurations for each dataset
+    split_configs = {
+        '02': [(2, 2, 3)],
+        '05': [(2, 2, 3)],
+        '08': [(2, 2, 3)],
+        '13': [(2, 2, 3)],
+        '12': [(16, 16, 17), (2, 2, 3)],  # Lung split first, then kidney
+        '07': [(12, 12, 13)],
+        '14': [(12, 12, 13)]
+    }
     
-    if dataset_index == '13':
-        print("13")
-        organ_index = 2
-        right_index =2 
-        left_index =3
-        original_data = rl_split(original_data, organ_index, right_index, left_index)
-   
-    if dataset_index == '12':
-        print('12')
-        organ_index = 16
-        right_index = 16 
-        left_index = 17
-        input_data = rl_split(original_data, organ_index, right_index, left_index)
-        print('Lung_Split')
-        organ_index = 2
-        right_index =2 
-        left_index =3
-        original_data = rl_split(input_data, organ_index, right_index, left_index)
-    if dataset_index == '07':
-        print("07")
-        organ_index = 12
-        right_index = 12 
-        left_index = 13
-        original_data = rl_split(original_data, organ_index, right_index, left_index)
-    if dataset_index == '14':
-        organ_index = 12
-        right_index = 12 
-        left_index = 13
-        original_data = rl_split(original_data, organ_index, right_index, left_index)
+    if dataset_index in split_configs:
+        print(dataset_index)
+        for config in split_configs[dataset_index]:
+            organ_index, right_index, left_index = config
+            original_data = rl_split(original_data, organ_index, right_index, left_index)
+            if dataset_index == '12' and organ_index == 16:
+                print('Lung_Split')
+    
     return original_data
 
 
 def label_transfer(args,original_data,case):
     
-    if args.dataset_name[:2] != '10':
-        original_index = TEMPLATE_orgianl[args.dataset_name[:2]]
-    elif args.dataset_name[:2] == '10':
-        if case.split('_')[0] == 'colon':
-            original_index = TEMPLATE_orgianl['10_10']
-        elif case.split('_')[0] == 'hepaticvessel':
-            original_index = TEMPLATE_orgianl['10_08']
-        elif case.split('_')[0] == 'liver':
-            original_index = TEMPLATE_orgianl['10_03']
-        elif case.split('_')[0] == 'lung':
-            original_index = TEMPLATE_orgianl['10_06']
-        elif case.split('_')[0] == 'pancreas':
-            original_index = TEMPLATE_orgianl['10_07']
-        elif case.split('_')[0] == 'spleen':
-            original_index = TEMPLATE_orgianl['10_09']
+    # Define mapping for dataset '10' organ types
+    dataset_10_mapping = {
+        'colon': '10_10',
+        'hepaticvessel': '10_08',
+        'liver': '10_03',
+        'lung': '10_06',
+        'pancreas': '10_07',
+        'spleen': '10_09'
+    }
+    
+    dataset_prefix = args.dataset_name[:2]
+    if dataset_prefix != '10':
+        original_index = TEMPLATE_orgianl[dataset_prefix]
+    else:
+        organ_type = case.split('_')[0]
+        original_index = TEMPLATE_orgianl.get(dataset_10_mapping.get(organ_type, '10_09'))
     
     data_index = np.unique(original_data)
     our_original_data = np.zeros(original_data.shape)
