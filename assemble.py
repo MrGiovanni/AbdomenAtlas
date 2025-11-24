@@ -109,7 +109,8 @@ def label_transfer(args,original_data,case):
         original_index = TEMPLATE_orgianl[dataset_prefix]
     else:
         organ_type = case.split('_')[0]
-        original_index = TEMPLATE_orgianl.get(dataset_10_mapping.get(organ_type, '10_09'))
+        dataset_key = dataset_10_mapping.get(organ_type, '10_09')
+        original_index = TEMPLATE_orgianl[dataset_key]
     
     data_index = np.unique(original_data)
     our_original_data = np.zeros(original_data.shape)
