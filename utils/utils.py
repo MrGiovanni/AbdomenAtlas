@@ -233,6 +233,63 @@ TUMOR_ORGAN = {
 }
 
 
+def _process_lung_anomaly_detection(pred_mask, post_pred_mask, lung_mask, save_path, b, 
+                                    total_anomly_slice_number, case_id, anomaly_csv_path,
+                                    left_lung_save_path, right_lung_save_path):
+    """Helper function to process lung anomaly detection with iterative refinement."""
+    try:
+        left_lung_mask, right_lung_mask, total_anomly_slice_number = anomly_detection(
+            pred_mask, lung_mask, save_path, b, total_anomly_slice_number)
+        post_pred_mask[b, 16] = left_lung_mask
+        post_pred_mask[b, 15] = right_lung_mask
+        
+        # Iteratively refine lung separation
+        right_lung_size = np.sum(post_pred_mask[b, 15], axis=(0, 1, 2))
+        left_lung_size = np.sum(post_pred_mask[b, 16], axis=(0, 1, 2))
+        
+        while right_lung_size/left_lung_size > 4 or left_lung_size/right_lung_size > 4:
+            print('still need anomly detection')
+            if right_lung_size > left_lung_size:
+                target_mask = post_pred_mask[b, 15]
+                save_path_iter = right_lung_save_path
+            else:
+                target_mask = post_pred_mask[b, 16]
+                save_path_iter = left_lung_save_path
+                
+            left_lung_mask, right_lung_mask, total_anomly_slice_number = anomly_detection(
+                pred_mask, target_mask, save_path_iter, b, total_anomly_slice_number)
+            post_pred_mask[b, 16] = left_lung_mask
+            post_pred_mask[b, 15] = right_lung_mask
+            right_lung_size = np.sum(post_pred_mask[b, 15], axis=(0, 1, 2))
+            left_lung_size = np.sum(post_pred_mask[b, 16], axis=(0, 1, 2))
+        
+        print('lung seperation complete')
+    except IndexError:
+        left_lung_mask, right_lung_mask = lung_post_process(pred_mask[b])
+        post_pred_mask[b, 16] = left_lung_mask
+        post_pred_mask[b, 15] = right_lung_mask
+        print("cannot seperate two lungs, writing csv")
+        with open(anomaly_csv_path, 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([case_id])
+    
+    return post_pred_mask, total_anomly_slice_number
+
+def _check_single_lung(lung_mask, is_right_larger):
+    """Check if only one lung is present based on spatial distribution."""
+    mid_point = int(lung_mask.shape[0] / 2)
+    left_region = np.sum(lung_mask[:mid_point, :, :], axis=(0, 1, 2))
+    right_region = np.sum(lung_mask[mid_point:, :, :], axis=(0, 1, 2))
+    
+    if (right_region + 1) / (left_region + 1) > 4:
+        print('this case only has right lung')
+        return 'right', np.zeros(lung_mask.shape)
+    elif (left_region + 1) / (right_region + 1) > 4:
+        print('this case only has left lung')
+        return 'left', np.zeros(lung_mask.shape)
+    else:
+        return 'both', None
+
 def organ_post_process(pred_mask, organ_list,case_dir,args):
     post_pred_mask = np.zeros(pred_mask.shape)
     dataset_id = case_dir.split('/')[-2]
@@ -688,16 +745,12 @@ def threshold_organ(data, args,organ=None, threshold=None):
     ## data: sigmoid value
     ## threshold_list: a list of organ threshold
     B = data.shape[0]
-    threshold_list = []
     if organ:
         THRESHOLD_DIC[organ] = threshold
-    for key, value in THRESHOLD_DIC.items():
-        threshold_list.append(value)
-    if args.cpu:
-        threshold_list = torch.tensor(threshold_list).repeat(B, 1).reshape(B,len(threshold_list),1,1,1)
-    else:
-        threshold_list = torch.tensor(threshold_list).repeat(B, 1).reshape(B,len(threshold_list),1,1,1).cuda()
-    pred_hard = data > threshold_list
+    threshold_list = list(THRESHOLD_DIC.values())
+    device = 'cpu' if args.cpu else data.device
+    threshold_tensor = torch.tensor(threshold_list, device=device).repeat(B, 1).reshape(B, len(threshold_list), 1, 1, 1)
+    pred_hard = data > threshold_tensor
     return pred_hard
 
 def save_organ_label(batch,save_dir,input_transform,organ_index):
@@ -786,12 +839,15 @@ def merge_label(pred_bmask, name):
 
     return merged_label_v1, merged_label_v2
 
+def _create_label_tensor(shape, device_flag):
+    """Helper function to create label tensors on the appropriate device."""
+    B, C, W, H, D = shape
+    device = 'cpu' if device_flag else 'cuda'
+    return torch.zeros(B, 1, W, H, D, device=device)
+
 def pseudo_label_all_organ(pred_bmask,args):
     B, C, W, H, D = pred_bmask.shape
-    if args.cpu:
-        pseudo_label = torch.zeros(B,1,W,H,D)
-    else:
-        pseudo_label = torch.zeros(B,1,W,H,D).cuda()
+    pseudo_label = _create_label_tensor(pred_bmask.shape, args.cpu)
     for b in range(B):
         template_key ='all'
         pseudo_label_mapping = PSEUDO_LABEL_ALL[template_key]
@@ -802,10 +858,7 @@ def pseudo_label_all_organ(pred_bmask,args):
 
 def pseudo_label_single_organ(pred_bmask,organ_index,args):
     B, C, W, H, D = pred_bmask.shape
-    if args.cpu:
-        pseudo_label_single_organ = torch.zeros(B,1,W,H,D)
-    else:
-        pseudo_label_single_organ = torch.zeros(B,1,W,H,D).cuda()
+    pseudo_label_single_organ = _create_label_tensor(pred_bmask.shape, args.cpu)
     for b in range(B):
         template_key = ORGAN_NAME[organ_index-1]
         pseudo_label_single_organ_mapping = PSEUDO_LABEL_ALL[template_key]

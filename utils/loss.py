@@ -44,26 +44,27 @@ class DiceLoss(nn.Module):
 
         total_loss = []
         B = predict.shape[0]
+        organ_set = set(TEMPLATE['all'])  # Convert to set for faster lookup
 
         for b in range(B):
-            target_sum = torch.sum(target[b],axis = (1,2,3))
-            assert len(target_sum) == 32, 'target sum =! 32'
-            non_zero_tensor = torch.nonzero(target_sum).squeeze()
-            non_zero_list = non_zero_tensor.tolist() if non_zero_tensor.dim() > 0 else [non_zero_tensor.tolist()]
-            organ_list = TEMPLATE['all']
-            new_list = []
-            for idx in non_zero_list:
-                if idx+1 in organ_list:
-                    new_list.append(idx+1)
-            if len(new_list)!=0:     
-                for organ in new_list:
-                    dice_loss = self.dice(predict[b, organ-1], target[b, organ-1])
+            target_sum = torch.sum(target[b], dim=(1, 2, 3))
+            assert len(target_sum) == 32, 'target sum != 32'
+            non_zero_indices = torch.nonzero(target_sum, as_tuple=False).squeeze()
+            
+            # Handle case where non_zero_indices is a scalar or 1D tensor
+            if non_zero_indices.ndim == 0:
+                non_zero_indices = non_zero_indices.unsqueeze(0)
+            
+            for idx in non_zero_indices:
+                organ_idx = idx.item() + 1
+                if organ_idx in organ_set:
+                    dice_loss = self.dice(predict[b, idx], target[b, idx])
                     total_loss.append(dice_loss)
         
         if len(total_loss) == 0:
-            return torch.tensor(1.0).cuda()
+            return torch.tensor(1.0, device=predict.device)
         total_loss = torch.stack(total_loss)
-        return total_loss.sum()/total_loss.shape[0]
+        return total_loss.mean()
 
         
 
