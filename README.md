@@ -268,7 +268,7 @@ Figure. Illustration of an attention map.
   author={Bassi, Pedro RAS and Li, Wenxuan and Tang, Yucheng and Isensee, Fabian and Wang, Zifu and Chen, Jieneng and Chou, Yu-Cheng and Kirchhoff, Yannick and Rokuss, Maximilian and Huang, Ziyan and Ye, Jin and He, Junjun and Wald, Tassilo and Ulrich, Constantin and Baumgartner, Michael and Roy, Saikat and Maier-Hein, Klaus H. and Jaeger, Paul and Ye, Yiwen and Xie, Yutong and Zhang, Jianpeng and Chen, Ziyang and Xia, Yong and Xing, Zhaohu and Zhu, Lei and Sadegheih, Yousef and Bozorgpour, Afshin and Kumari, Pratibha and Azad, Reza and Merhof, Dorit and Shi, Pengcheng and Ma, Ting and Du, Yuxin and Bai, Fan and Huang, Tiejun and Zhao, Bo and Wang, Haonan and Li, Xiaomeng and Gu, Hanxue and Dong, Haoyu and Yang, Jichen and Mazurowski, Maciej A. and Gupta, Saumya and Wu, Linshan and Zhuang, Jiaxin and Chen, Hao and Roth, Holger and Xu, Daguang and Blaschko, Matthew B. and Decherchi, Sergio and Cavalli, Andrea and Yuille, Alan L. and Zhou, Zongwei},
   journal={Conference on Neural Information Processing Systems},
   year={2024},
-  utl={https://github.com/MrGiovanni/Touchstone}
+  url={https://github.com/MrGiovanni/Touchstone}
 }
 
 @article{qu2023abdomenatlas,
@@ -280,7 +280,7 @@ Figure. Illustration of an attention map.
 }
 
 @inproceedings{li2024well,
-  title={How Well Do Supervised Models Transfer to 3D Image Segmentation?},
+  title={How Well Do Supervised 3D Models Transfer to Medical Imaging Tasks?},
   author={Li, Wenxuan and Yuille, Alan and Zhou, Zongwei},
   booktitle={The Twelfth International Conference on Learning Representations},
   year={2024}
