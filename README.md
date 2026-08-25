@@ -181,7 +181,7 @@ Download the trained models and save them into `./pretrained_checkpoints/`.
 
 ## 2. Prepare your datasets
 
-It can be publicly available datasets (e.g., BTCV) or your private datasets. Currently, we only take data formatted in `nii.gz`. This repository will help you assign annotations to these datasets, including 25 organs and six types of tumors (*where the annotation of eight organs is pretty accurate*).
+It can be publicly available datasets (e.g., BTCV) or your private datasets. Currently, we only take data formatted in `nii.gz`. This repository will help you assign annotations to these datasets, including 25 organs and seven types of tumors (*where the annotation of eight organs is pretty accurate*).
 
 ##### 2.1 Download
 
@@ -247,7 +247,7 @@ Figure. Illustration of an attention map.
 ## TODO
 
 - [x] Release pre-trained AI model checkpoints (U-Net and Swin UNETR)
-- [x] Release the AbdomenAtlas-8K dataset (we commit to releasing 3,410 of the 8,448 CT volumes)
+- [x] Release the AbdomenAtlas-8K dataset (we commit to releasing 5,195 of the 8,448 CT volumes)
 - [ ] Support more data formats (e.g., dicom)
 
 ## Citation 
@@ -255,24 +255,28 @@ Figure. Illustration of an attention map.
 ```
 @article{li2024abdomenatlas,
   title={AbdomenAtlas: A large-scale, detailed-annotated, \& multi-center dataset for efficient transfer learning and open algorithmic benchmarking},
-  author={Li, Wenxuan and Qu, Chongyu and Chen, Xiaoxi and Bassi, Pedro RAS and Shi, Yijia and Lai, Yuxiang and Yu, Qian and Xue, Huimin and Chen, Yixiong and Lin, Xiaorui and others},
+  author={Li, Wenxuan and Qu, Chongyu and Chen, Xiaoxi and Bassi, Pedro RAS and Shi, Yijia and Lai, Yuxiang and Yu, Qian and Xue, Huimin and Chen, Yixiong and Lin, Xiaorui and Tang, Yutong and Cao, Yining and Han, Haoqi and Zhang, Zheyuan and Liu, Jiawei and Zhang, Tiezheng and Ma, Yujiu and Wang, Jincheng and Zhang, Guang and Yuille, Alan and Zhou, Zongwei},
   journal={Medical Image Analysis},
+  volume={97},
   pages={103285},
   year={2024},
   publisher={Elsevier},
   url={https://github.com/MrGiovanni/AbdomenAtlas}
 }
 
-@article{bassi2024touchstone,
+@inproceedings{bassi2024touchstone,
   title={Touchstone Benchmark: Are We on the Right Way for Evaluating AI Algorithms for Medical Segmentation?},
   author={Bassi, Pedro RAS and Li, Wenxuan and Tang, Yucheng and Isensee, Fabian and Wang, Zifu and Chen, Jieneng and Chou, Yu-Cheng and Kirchhoff, Yannick and Rokuss, Maximilian and Huang, Ziyan and Ye, Jin and He, Junjun and Wald, Tassilo and Ulrich, Constantin and Baumgartner, Michael and Roy, Saikat and Maier-Hein, Klaus H. and Jaeger, Paul and Ye, Yiwen and Xie, Yutong and Zhang, Jianpeng and Chen, Ziyang and Xia, Yong and Xing, Zhaohu and Zhu, Lei and Sadegheih, Yousef and Bozorgpour, Afshin and Kumari, Pratibha and Azad, Reza and Merhof, Dorit and Shi, Pengcheng and Ma, Ting and Du, Yuxin and Bai, Fan and Huang, Tiejun and Zhao, Bo and Wang, Haonan and Li, Xiaomeng and Gu, Hanxue and Dong, Haoyu and Yang, Jichen and Mazurowski, Maciej A. and Gupta, Saumya and Wu, Linshan and Zhuang, Jiaxin and Chen, Hao and Roth, Holger and Xu, Daguang and Blaschko, Matthew B. and Decherchi, Sergio and Cavalli, Andrea and Yuille, Alan L. and Zhou, Zongwei},
-  journal={Conference on Neural Information Processing Systems},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={37},
+  pages={15184--15201},
+  doi={10.52202/079017-0485},
   year={2024},
   url={https://github.com/MrGiovanni/Touchstone}
 }
 
 @article{qu2023abdomenatlas,
-  title={Abdomenatlas-8k: Annotating 8,000 CT volumes for multi-organ segmentation in three weeks},
+  title={AbdomenAtlas-8K: Annotating 8,000 CT Volumes for Multi-Organ Segmentation in Three Weeks},
   author={Qu, Chongyu and Zhang, Tiezheng and Qiao, Hualin and Liu, Jie and Tang, Yucheng and Yuille, Alan and Zhou, Zongwei},
   journal={Advances in Neural Information Processing Systems},
   volume={36},
