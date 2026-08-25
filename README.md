@@ -273,7 +273,7 @@ Figure. Illustration of an attention map.
 
 @article{qu2023abdomenatlas,
   title={Abdomenatlas-8k: Annotating 8,000 CT volumes for multi-organ segmentation in three weeks},
-  author={Qu, Chongyu and Zhang, Tiezheng and Qiao, Hualin and Tang, Yucheng and Yuille, Alan L and Zhou, Zongwei and others},
+  author={Qu, Chongyu and Zhang, Tiezheng and Qiao, Hualin and Liu, Jie and Tang, Yucheng and Yuille, Alan and Zhou, Zongwei},
   journal={Advances in Neural Information Processing Systems},
   volume={36},
   year={2023}
